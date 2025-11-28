@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <title>C-GPT Standalone Chatbot</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <link rel="stylesheet" href="css/widget.css">
+  </head>
+  <body>
+    <div class="page-wrapper">
+      <h1>C-GPT Standalone Chatbot</h1>
+      <p>
+        This is just normal page content. The chatbot lives in the bottom-right
+        corner. Click the red round button to open it. Everything is
+        frontend-only right now – the bot will simply echo your messages with a
+        small typing animation.
+      </p>
+    </div>
+
+    <!-- ===== CHAT WIDGET MARKUP ===== -->
+    <div class="cgpt-widget">
+      <button class="cgpt-btn" aria-label="Open chat" title="Chat with C-GPT">
+        <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+          <path
+            d="M12 3a9 9 0 00-9 9c0 2.5 1 4.8 2.8 6.4L5 21l2.6-1.3A9 9 0 1012 3z"
+            fill="#fff"
+          />
+        </svg>
+      </button>
+
+      <div
+        class="cgpt-panel"
+        role="dialog"
+        aria-label="C-GPT chat panel"
+        aria-hidden="true"
+      >
+        <div class="cgpt-header">
+          <div class="cgpt-brand">
+            <div class="cgpt-logo">C</div>
+            <div>
+              <div class="cgpt-title">C-GPT</div>
+              <div class="cgpt-muted" style="font-size: 12px">Assistant</div>
+            </div>
+          </div>
+
+          <div class="cgpt-controls">
+            <div class="cgpt-theme-menu">
+              <button
+                class="cgpt-small-btn icon"
+                id="cgptThemeBtn"
+                title="Change theme"
+              >
+                ⚙️
+              </button>
+              <div class="cgpt-theme-pop" id="cgptThemePop" aria-hidden="true">
+                <div class="cgpt-theme-opt" data-theme="red">
+                  <span
+                    class="cgpt-theme-sw"
+                    style="background: linear-gradient(90deg, #ff0033, #ff6f85)"
+                  ></span>
+                  Red
+                </div>
+                <div class="cgpt-theme-opt" data-theme="black">
+                  <span
+                    class="cgpt-theme-sw"
+                    style="background: linear-gradient(90deg, #0b0d10, #2f9cff)"
+                  ></span>
+                  Black
+                </div>
+                <div class="cgpt-theme-opt" data-theme="white">
+                  <span
+                    class="cgpt-theme-sw"
+                    style="background: linear-gradient(90deg, #ffffff, #ff6b7a)"
+                  ></span>
+                  White
+                </div>
+              </div>
+            </div>
+
+            <button
+              class="cgpt-small-btn"
+              id="cgptShareBtn"
+              title="Share (layout-only)"
+            >
+              Share
+            </button>
+            <button
+              class="cgpt-small-btn"
+              id="cgptLoginBtn"
+              title="Log in (layout-only)"
+            >
+              Log in
+            </button>
+          </div>
+        </div>
+
+        <div class="cgpt-body" id="cgptBody" aria-live="polite"></div>
+
+        <div class="cgpt-composer">
+          <textarea
+            class="cgpt-textarea"
+            id="cgptInput"
+            placeholder="Type a message — Enter to send"
+          ></textarea>
+          <button class="cgpt-send" id="cgptSend">Send</button>
+        </div>
+      </div>
+    </div>
+    <script src="js/widget.js"></script>
+  </body>
+</html>
