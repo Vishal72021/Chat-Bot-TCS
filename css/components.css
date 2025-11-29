@@ -1,0 +1,63 @@
+/* Logo styling using theme colors */
+.cgpt-logo {
+  background: linear-gradient(
+    135deg,
+    var(--cgpt-accent-strong),
+    var(--cgpt-accent)
+  );
+  color: #ffffff;
+  box-shadow: 0 10px 25px rgba(248, 113, 113, 0.35);
+}
+
+/* Subtitle + small text */
+.cgpt-subtitle,
+.cgpt-login-hint {
+  color: var(--cgpt-muted);
+}
+
+/* Theme dropdown surface */
+.cgpt-theme-pop {
+  background: var(--cgpt-panel-bg-alt);
+  box-shadow: var(--cgpt-shadow-soft);
+  border: 1px solid var(--cgpt-border-subtle);
+}
+
+.cgpt-theme-opt:hover {
+  background: rgba(241, 245, 249, 0.8);
+}
+
+html[data-cgpt-theme="black"] .cgpt-theme-opt:hover {
+  background: rgba(15, 23, 42, 0.95);
+}
+
+/* Buttons hover/active */
+
+.cgpt-send:hover,
+.cgpt-login-primary:hover,
+.cgpt-otp-btn:hover,
+.cgpt-btn:hover {
+  filter: brightness(1.05);
+}
+
+.cgpt-send:active,
+.cgpt-login-primary:active,
+.cgpt-otp-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 6px 16px rgba(248, 113, 113, 0.45);
+}
+
+/* Share & login chips hover are already styled via theme.css */
+
+/* Close button subtle opacity */
+.cgpt-login-close {
+  opacity: 0.7;
+}
+
+.cgpt-login-close:hover {
+  opacity: 1;
+}
+
+/* Slight message shadow refinement */
+.cgpt-msg {
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+}

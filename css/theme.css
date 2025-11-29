@@ -1,0 +1,368 @@
+/* ---------- BASE TOKENS ---------- */
+
+:root {
+  --cgpt-radius-lg: 16px;
+  --cgpt-radius-md: 12px;
+  --cgpt-radius-sm: 8px;
+
+  --cgpt-border-subtle: rgba(15, 23, 42, 0.08);
+  --cgpt-shadow-soft: 0 12px 30px rgba(15, 23, 42, 0.18);
+  --cgpt-shadow-strong: 0 24px 60px rgba(15, 23, 42, 0.25);
+
+  /* default theme tokens – red light mode */
+  --page-bg: radial-gradient(
+    circle at top,
+    #ffe5ea 0,
+    #ffffff 45%,
+    #f5f5f5 100%
+  );
+  --page-text: #111827;
+
+  --cgpt-panel-bg: #fff7f7;
+  --cgpt-panel-bg-alt: #ffffff;
+  --cgpt-header-bg: linear-gradient(90deg, #fff1f2, #ffe4e6);
+
+  --cgpt-text: #111827;
+  --cgpt-muted: #7c2d3c;
+
+  --cgpt-accent: #f97373;
+  --cgpt-accent-strong: #fb385a;
+  --cgpt-accent-soft: #ffe4ea;
+
+  --cgpt-scroll-thumb: #fb385a;
+}
+
+/* ---------- THEME: RED (default) ---------- */
+
+html[data-cgpt-theme="red"] {
+  --page-bg: radial-gradient(
+    circle at top,
+    #ffe5ea 0,
+    #ffffff 45%,
+    #f5f5f5 100%
+  );
+  --page-text: #111827;
+
+  --cgpt-panel-bg: #fff7f7;
+  --cgpt-panel-bg-alt: #ffffff;
+  --cgpt-header-bg: linear-gradient(90deg, #fff1f2, #ffe4e6);
+
+  --cgpt-text: #111827;
+  --cgpt-muted: #7c2d3c;
+
+  --cgpt-accent: #f97373;
+  --cgpt-accent-strong: #fb385a;
+  --cgpt-accent-soft: #ffe4ea;
+
+  --cgpt-scroll-thumb: #fb385a;
+}
+
+/* ---------- THEME: BLACK (dark) ---------- */
+
+html[data-cgpt-theme="black"] {
+  --page-bg: radial-gradient(circle at top, #020617, #020617 40%, #000000 100%);
+  --page-text: #e5e7eb;
+
+  --cgpt-panel-bg: #050609;
+  --cgpt-panel-bg-alt: #0b0f16;
+  --cgpt-header-bg: linear-gradient(90deg, #111827, #020617);
+
+  --cgpt-text: #e5e7eb;
+  --cgpt-muted: #9ca3af;
+
+  --cgpt-accent: #fb385a;
+  --cgpt-accent-strong: #fb7185;
+  --cgpt-accent-soft: #111827;
+
+  --cgpt-scroll-thumb: #fb385a;
+}
+
+/* ---------- THEME: WHITE (clean) ---------- */
+
+html[data-cgpt-theme="white"] {
+  --page-bg: linear-gradient(#ffffff, #fef2f2);
+  --page-text: #020617;
+
+  --cgpt-panel-bg: #ffffff;
+  --cgpt-panel-bg-alt: #fef2f2;
+  --cgpt-header-bg: linear-gradient(90deg, #f9fafb, #fee2e2);
+
+  --cgpt-text: #020617;
+  --cgpt-muted: #6b7280;
+
+  --cgpt-accent: #fb385a;
+  --cgpt-accent-strong: #f97373;
+  --cgpt-accent-soft: #fee2e2;
+
+  --cgpt-scroll-thumb: #fb385a;
+}
+
+/* ---------- THEME: TCS CORP RED (extra) ---------- */
+/* A slightly deeper corporate-ish red theme */
+
+html[data-cgpt-theme="tcs-red"] {
+  --page-bg: radial-gradient(circle at top, #ffe1e1, #fff5f5);
+  --page-text: #1f2933;
+
+  --cgpt-panel-bg: #fff5f5;
+  --cgpt-panel-bg-alt: #ffffff;
+  --cgpt-header-bg: linear-gradient(90deg, #7f1d1d, #b91c1c);
+
+  --cgpt-text: #1f2933;
+  --cgpt-muted: #924040;
+
+  --cgpt-accent: #e11d48;
+  --cgpt-accent-strong: #b91c1c;
+  --cgpt-accent-soft: #fee2e2;
+
+  --cgpt-scroll-thumb: #e11d48;
+}
+
+/* ---------- AUTO DARK MODE (when no explicit theme set) ---------- */
+/* If JS never sets data-cgpt-theme, system dark mode will influence tokens */
+
+@media (prefers-color-scheme: dark) {
+  html:not([data-cgpt-theme]) {
+    --page-bg: radial-gradient(circle at top, #020617, #000000);
+    --page-text: #e5e7eb;
+
+    --cgpt-panel-bg: #050609;
+    --cgpt-panel-bg-alt: #0b0f16;
+    --cgpt-header-bg: linear-gradient(90deg, #111827, #020617);
+
+    --cgpt-text: #e5e7eb;
+    --cgpt-muted: #9ca3af;
+
+    --cgpt-accent: #fb385a;
+    --cgpt-accent-strong: #fb7185;
+    --cgpt-accent-soft: #111827;
+
+    --cgpt-scroll-thumb: #fb385a;
+  }
+}
+
+/* ---------- APPLY TOKENS TO COMPONENTS ---------- */
+
+body {
+  background: var(--page-bg);
+  color: var(--page-text);
+}
+
+.cgpt-panel {
+  background: var(--cgpt-panel-bg);
+  box-shadow: var(--cgpt-shadow-strong);
+  border: 1px solid var(--cgpt-border-subtle);
+  backdrop-filter: blur(16px);
+}
+
+.cgpt-header {
+  background: var(--cgpt-header-bg);
+  border-bottom: 1px solid var(--cgpt-border-subtle);
+}
+
+.cgpt-btn {
+  background: linear-gradient(
+    135deg,
+    var(--cgpt-accent-strong),
+    var(--cgpt-accent)
+  );
+  color: #ffffff;
+  box-shadow: var(--cgpt-shadow-strong);
+}
+
+.cgpt-body {
+  background: radial-gradient(
+    circle at top left,
+    var(--cgpt-panel-bg-alt),
+    var(--cgpt-panel-bg)
+  );
+  color: var(--cgpt-text);
+}
+
+.cgpt-body::-webkit-scrollbar-thumb {
+  background: var(--cgpt-scroll-thumb);
+}
+
+.cgpt-msg.bot {
+  background: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.85),
+    rgba(255, 255, 255, 0.98)
+  );
+  border: 1px dashed rgba(148, 163, 184, 0.6);
+}
+
+html[data-cgpt-theme="black"] .cgpt-msg.bot {
+  background: linear-gradient(180deg, #020617, #020617);
+  border-color: rgba(148, 163, 184, 0.4);
+}
+
+.cgpt-msg.bot::before {
+  background: linear-gradient(
+    180deg,
+    var(--cgpt-accent),
+    var(--cgpt-accent-strong)
+  );
+  box-shadow: 0 6px 18px rgba(248, 113, 113, 0.4);
+}
+
+.cgpt-msg.user {
+  background: linear-gradient(180deg, #ffffff, var(--cgpt-accent-soft));
+  border: 1px solid rgba(248, 113, 113, 0.35);
+  color: var(--cgpt-text);
+}
+
+html[data-cgpt-theme="black"] .cgpt-msg.user {
+  background: linear-gradient(180deg, #020617, #0b1120);
+  border-color: rgba(248, 113, 113, 0.6);
+}
+
+/* composer & textarea */
+
+.cgpt-composer {
+  border-top: 1px solid var(--cgpt-border-subtle);
+  background: linear-gradient(
+    180deg,
+    var(--cgpt-panel-bg-alt),
+    var(--cgpt-panel-bg)
+  );
+}
+
+.cgpt-textarea {
+  border-color: rgba(148, 163, 184, 0.5);
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--cgpt-text);
+}
+
+html[data-cgpt-theme="black"] .cgpt-textarea {
+  background: rgba(15, 23, 42, 0.95);
+  border-color: rgba(148, 163, 184, 0.6);
+  color: #e5e7eb;
+}
+
+/* header chips */
+
+.cgpt-chip {
+  border-color: rgba(148, 163, 184, 0.32);
+  background: rgba(255, 255, 255, 0.35);
+  color: var(--cgpt-text);
+  backdrop-filter: blur(8px);
+}
+
+.cgpt-chip:hover {
+  background: rgba(255, 255, 255, 0.65);
+}
+
+html[data-cgpt-theme="black"] .cgpt-chip {
+  background: rgba(15, 23, 42, 0.65);
+  border-color: rgba(148, 163, 184, 0.4);
+  color: #e5e7eb;
+}
+
+html[data-cgpt-theme="black"] .cgpt-chip:hover {
+  background: rgba(15, 23, 42, 0.9);
+}
+
+/* theme swatches */
+
+.cgpt-theme-sw {
+  border-color: rgba(148, 163, 184, 0.6);
+}
+
+.cgpt-theme-sw--red {
+  background: linear-gradient(90deg, #fb385a, #fb7185);
+}
+
+.cgpt-theme-sw--black {
+  background: linear-gradient(90deg, #020617, #111827);
+}
+
+.cgpt-theme-sw--white {
+  background: linear-gradient(90deg, #ffffff, #fee2e2);
+}
+
+/* login modal & inputs */
+
+.cgpt-login-backdrop {
+  background: rgba(15, 23, 42, 0.55);
+  backdrop-filter: blur(10px);
+}
+
+.cgpt-login-dialog {
+  background: var(--cgpt-panel-bg-alt);
+  box-shadow: var(--cgpt-shadow-strong);
+  border: 1px solid var(--cgpt-border-subtle);
+  color: var(--cgpt-text);
+}
+
+.cgpt-login-sub {
+  color: var(--cgpt-muted);
+}
+
+.cgpt-login-input {
+  background: rgba(255, 255, 255, 0.95);
+  color: var(--cgpt-text);
+  border-color: rgba(148, 163, 184, 0.6);
+}
+
+html[data-cgpt-theme="black"] .cgpt-login-input {
+  background: rgba(15, 23, 42, 0.98);
+  color: #e5e7eb;
+  border-color: rgba(148, 163, 184, 0.6);
+}
+
+.cgpt-login-input:focus {
+  border-color: var(--cgpt-accent);
+  box-shadow: 0 0 0 1px rgba(248, 113, 113, 0.5);
+}
+
+.cgpt-login-error {
+  color: #ef4444;
+}
+
+.cgpt-login-primary {
+  background: linear-gradient(
+    135deg,
+    var(--cgpt-accent-strong),
+    var(--cgpt-accent)
+  );
+  color: #ffffff;
+  box-shadow: 0 10px 25px rgba(248, 113, 113, 0.5);
+}
+
+.cgpt-login-secondary {
+  background: rgba(148, 163, 184, 0.12);
+  color: var(--cgpt-muted);
+}
+
+/* login animations */
+
+.cgpt-login-backdrop.open {
+  animation: cgpt-login-open 0.22s cubic-bezier(0.22, 0.9, 0.3, 1) forwards;
+}
+
+.cgpt-login-backdrop.closing {
+  animation: cgpt-login-close 0.18s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+}
+
+@keyframes cgpt-login-open {
+  from {
+    opacity: 0;
+    transform: scale(0.94) translateY(6px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes cgpt-login-close {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.94) translateY(6px);
+  }
+}

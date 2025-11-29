@@ -1,0 +1,459 @@
+/* ---------- GLOBAL ROOT & RESET ---------- */
+
+:root {
+  --page-font: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+
+  /* Safe fallbacks; real values come from theme.css */
+  --page-bg: #ffffff;
+  --page-text: #111827;
+}
+
+html,
+body {
+  margin: 0;
+  height: 100%;
+}
+
+body {
+  font-family: var(--page-font);
+  background: var(--page-bg);
+  color: var(--page-text);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---------- DEMO PAGE LAYOUT (non-widget) ---------- */
+
+.page-wrapper {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 32px 20px;
+}
+
+.hero h1 {
+  font-size: clamp(2rem, 3vw, 2.5rem);
+  margin-bottom: 8px;
+}
+
+.hero p {
+  max-width: 620px;
+  line-height: 1.6;
+}
+
+/* ---------- WIDGET CONTAINER ---------- */
+
+.cgpt-widget {
+  position: fixed;
+  right: 20px;
+  bottom: 20px;
+  z-index: 2147483646;
+  display: flex;
+  flex-direction: column-reverse; /* button at bottom, panel above */
+  align-items: flex-end;
+  gap: 12px;
+}
+
+/* ---------- FLOATING BUTTON ---------- */
+
+.cgpt-btn {
+  width: 64px;
+  height: 64px;
+  border-radius: 999px;
+  border: none;
+  display: grid;
+  place-items: center;
+  cursor: pointer;
+  transition: transform 0.2s ease, box-shadow 0.2s ease,
+    background-color 0.25s ease;
+}
+
+.cgpt-btn:hover {
+  transform: translateY(-3px) scale(1.02);
+}
+
+/* ---------- MAIN PANEL ---------- */
+
+.cgpt-panel {
+  width: 420px;
+  max-width: calc(100vw - 40px);
+  height: 640px;
+  border-radius: 16px;
+  overflow: hidden;
+  display: none;
+  flex-direction: column;
+  transform-origin: bottom right;
+}
+
+/* open / close animations */
+.cgpt-panel.open {
+  display: flex;
+  animation: cgpt-open 0.22s cubic-bezier(0.22, 0.9, 0.3, 1) forwards;
+}
+
+.cgpt-panel.closing {
+  display: flex;
+  animation: cgpt-close 0.18s cubic-bezier(0.4, 0, 0.6, 1) forwards;
+}
+
+@keyframes cgpt-open {
+  from {
+    opacity: 0;
+    transform: scale(0.92) translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+}
+
+@keyframes cgpt-close {
+  from {
+    opacity: 1;
+    transform: scale(1) translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: scale(0.92) translateY(10px);
+  }
+}
+
+/* ---------- HEADER ---------- */
+
+.cgpt-header {
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 14px;
+}
+
+.cgpt-brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cgpt-logo {
+  width: 36px;
+  height: 36px;
+  border-radius: 12px;
+  display: grid;
+  place-items: center;
+  font-weight: 900;
+  font-size: 16px;
+}
+
+.cgpt-title {
+  font-weight: 800;
+  font-size: 14px;
+}
+
+.cgpt-subtitle {
+  font-size: 12px;
+}
+
+/* ---------- HEADER CONTROLS ---------- */
+
+.cgpt-controls {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.cgpt-chip {
+  padding: 8px 11px;
+  border-radius: 8px;
+  font-weight: 600;
+  font-size: 13px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  border-width: 1px;
+  border-style: solid;
+}
+
+.cgpt-chip.icon {
+  min-width: 40px;
+  justify-content: center;
+}
+
+/* ---------- THEME DROPDOWN ---------- */
+
+.cgpt-theme-menu {
+  position: relative;
+}
+
+.cgpt-theme-pop {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 10px);
+  min-width: 190px;
+  border-radius: 12px;
+  padding: 8px;
+  display: none;
+  z-index: 20;
+}
+
+.cgpt-theme-pop.open {
+  display: block;
+}
+
+.cgpt-theme-opt {
+  padding: 7px 8px;
+  border-radius: 10px;
+  font-size: 13px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  cursor: pointer;
+}
+
+.cgpt-theme-sw {
+  width: 32px;
+  height: 18px;
+  border-radius: 999px;
+  border-width: 1px;
+  border-style: solid;
+}
+
+/* ---------- CHAT BODY ---------- */
+
+.cgpt-body {
+  flex: 1;
+  padding: 16px 14px 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow: auto;
+}
+
+/* Scrollbar styling (webkit only, safe no-op elsewhere) */
+.cgpt-body::-webkit-scrollbar {
+  width: 8px;
+}
+.cgpt-body::-webkit-scrollbar-thumb {
+  border-radius: 999px;
+}
+
+/* ---------- MESSAGES ---------- */
+
+.cgpt-msg {
+  max-width: 78%;
+  padding: 11px 13px;
+  border-radius: 12px;
+  line-height: 1.5;
+  font-size: 14px;
+  word-break: break-word;
+  position: relative;
+  box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+}
+
+.cgpt-msg.bot {
+  align-self: flex-start;
+  padding-left: 30px;
+  padding-right: 14px;
+}
+
+.cgpt-msg.bot::before {
+  content: "";
+  position: absolute;
+  left: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 6px;
+  height: 34px;
+  border-radius: 999px;
+}
+
+.cgpt-msg.user {
+  align-self: flex-end;
+}
+
+/* ---------- COMPOSER ---------- */
+
+.cgpt-composer {
+  padding: 10px 12px 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.cgpt-textarea {
+  flex: 1;
+  min-height: 42px;
+  max-height: 160px;
+  padding: 10px 11px;
+  border-radius: 12px;
+  resize: none;
+  outline: none;
+  font-size: 14px;
+  font-family: inherit;
+  border-width: 1px;
+  border-style: solid;
+}
+
+.cgpt-send {
+  align-self: center;
+  padding: 10px 16px;
+  border-radius: 12px;
+  border: none;
+  font-weight: 700;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+/* ---------- LOGIN MODAL ---------- */
+
+.cgpt-login-backdrop {
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+}
+
+.cgpt-login-backdrop.open {
+  display: flex;
+}
+
+.cgpt-login-backdrop.closing {
+  display: flex;
+}
+
+.cgpt-login-dialog {
+  position: relative;
+  width: 360px;
+  max-width: calc(100vw - 40px);
+  border-radius: 16px;
+  padding: 18px 18px 16px;
+}
+
+.cgpt-login-header {
+  margin-bottom: 12px;
+}
+
+.cgpt-login-title {
+  font-weight: 800;
+  font-size: 16px;
+  margin-bottom: 4px;
+}
+
+.cgpt-login-sub {
+  font-size: 12px;
+}
+
+.cgpt-login-body {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.cgpt-login-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 13px;
+}
+
+.cgpt-login-input {
+  padding: 8px 10px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  border-width: 1px;
+  border-style: solid;
+}
+
+.cgpt-login-error {
+  min-height: 18px;
+  font-size: 12px;
+}
+
+.cgpt-login-actions {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 6px;
+}
+
+.cgpt-login-primary,
+.cgpt-login-secondary {
+  border-radius: 999px;
+  padding: 8px 14px;
+  font-size: 13px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+}
+
+/* close button in modal */
+.cgpt-login-close {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+  border: none;
+  background: transparent;
+  cursor: pointer;
+  font-size: 16px;
+}
+
+/* ---------- OTP ROW ---------- */
+
+.cgpt-otp-row {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.cgpt-otp-row .cgpt-login-input {
+  flex: 1;
+}
+
+.cgpt-otp-btn {
+  border-radius: 999px;
+  padding: 8px 10px;
+  font-size: 12px;
+  font-weight: 700;
+  cursor: pointer;
+  border: none;
+  white-space: nowrap;
+}
+
+.cgpt-login-hint {
+  font-size: 11px;
+}
+
+/* ---------- TRANSITIONS FOR THEME CHANGES ---------- */
+
+.cgpt-panel,
+.cgpt-header,
+.cgpt-msg,
+.cgpt-composer,
+.cgpt-textarea,
+.cgpt-send,
+.cgpt-chip,
+.cgpt-login-dialog,
+.cgpt-login-input,
+.cgpt-login-primary,
+.cgpt-login-secondary,
+.cgpt-btn {
+  transition: background-color 0.25s ease, color 0.25s ease,
+    border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+/* ---------- RESPONSIVE ---------- */
+
+@media (max-width: 520px) {
+  .cgpt-panel {
+    left: 12px;
+    right: 12px;
+    bottom: 12px;
+    top: 12px;
+    width: auto;
+    height: auto;
+    max-height: calc(100vh - 24px);
+  }
+}

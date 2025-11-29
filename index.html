@@ -1,33 +1,36 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" data-cgpt-theme="red">
   <head>
     <meta charset="utf-8" />
-    <title>C-GPT Standalone Chatbot</title>
+    <title>C-GPT Chatbot Widget</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="stylesheet" href="css/widget.css">
+    <link rel="stylesheet" href="css/widget.css" />
   </head>
   <body>
-    <div class="page-wrapper">
-      <h1>C-GPT Standalone Chatbot</h1>
-      <p>
-        This is just normal page content. The chatbot lives in the bottom-right
-        corner. Click the red round button to open it. Everything is
-        frontend-only right now – the bot will simply echo your messages with a
-        small typing animation.
-      </p>
-    </div>
+    <main class="page-wrapper">
+      <section class="hero">
+        <h1>C-GPT Chatbot</h1>
+        <p>
+          This is a standalone demo page. The chatbot lives in the bottom-right
+          corner as a floating widget. Click the red button to open it and try a
+          conversation.
+        </p>
+      </section>
+    </main>
 
-    <!-- ===== CHAT WIDGET MARKUP ===== -->
+    <!-- CHAT WIDGET -->
     <div class="cgpt-widget">
+      <!-- Floating button -->
       <button class="cgpt-btn" aria-label="Open chat" title="Chat with C-GPT">
         <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
           <path
             d="M12 3a9 9 0 00-9 9c0 2.5 1 4.8 2.8 6.4L5 21l2.6-1.3A9 9 0 1012 3z"
-            fill="#fff"
+            fill="currentColor"
           />
         </svg>
       </button>
 
+      <!-- Chat panel -->
       <div
         class="cgpt-panel"
         role="dialog"
@@ -39,14 +42,14 @@
             <div class="cgpt-logo">C</div>
             <div>
               <div class="cgpt-title">C-GPT</div>
-              <div class="cgpt-muted" style="font-size: 12px">Assistant</div>
+              <div class="cgpt-subtitle">Assistant</div>
             </div>
           </div>
 
           <div class="cgpt-controls">
             <div class="cgpt-theme-menu">
               <button
-                class="cgpt-small-btn icon"
+                class="cgpt-chip icon"
                 id="cgptThemeBtn"
                 title="Change theme"
               >
@@ -54,40 +57,28 @@
               </button>
               <div class="cgpt-theme-pop" id="cgptThemePop" aria-hidden="true">
                 <div class="cgpt-theme-opt" data-theme="red">
-                  <span
-                    class="cgpt-theme-sw"
-                    style="background: linear-gradient(90deg, #ff0033, #ff6f85)"
-                  ></span>
-                  Red
+                  <span class="cgpt-theme-sw cgpt-theme-sw--red"></span> Red
                 </div>
                 <div class="cgpt-theme-opt" data-theme="black">
-                  <span
-                    class="cgpt-theme-sw"
-                    style="background: linear-gradient(90deg, #0b0d10, #2f9cff)"
-                  ></span>
-                  Black
+                  <span class="cgpt-theme-sw cgpt-theme-sw--black"></span> Black
                 </div>
                 <div class="cgpt-theme-opt" data-theme="white">
-                  <span
-                    class="cgpt-theme-sw"
-                    style="background: linear-gradient(90deg, #ffffff, #ff6b7a)"
-                  ></span>
-                  White
+                  <span class="cgpt-theme-sw cgpt-theme-sw--white"></span> White
                 </div>
               </div>
             </div>
 
             <button
-              class="cgpt-small-btn"
+              class="cgpt-chip"
               id="cgptShareBtn"
-              title="Share (layout-only)"
+              title="Share chat (demo)"
             >
               Share
             </button>
             <button
-              class="cgpt-small-btn"
+              class="cgpt-chip"
               id="cgptLoginBtn"
-              title="Log in (layout-only)"
+              title="Log in / Log out"
             >
               Log in
             </button>
@@ -106,6 +97,111 @@
         </div>
       </div>
     </div>
+
+    <!-- Login modal overlay -->
+    <div class="cgpt-login-backdrop" id="cgptLoginModal" aria-hidden="true">
+      <div class="cgpt-login-dialog">
+        <button
+          class="cgpt-login-close"
+          id="cgptLoginClose"
+          aria-label="Close login"
+        >
+          ✕
+        </button>
+        <div class="cgpt-login-header">
+          <div class="cgpt-login-title">Sign in to C-GPT</div>
+          <div class="cgpt-login-sub">
+            Demo credentials • Username: <b>vishal-chat</b>, Password:
+            <b>vishal-pass</b>
+          </div>
+        </div>
+
+        <form class="cgpt-login-body" id="cgptLoginForm">
+          <label class="cgpt-login-field">
+            <span>Username</span>
+            <input
+              type="text"
+              class="cgpt-login-input"
+              id="cgptLoginUser"
+              placeholder="vishal-chat"
+              autocomplete="username"
+            />
+          </label>
+
+          <label class="cgpt-login-field">
+            <span>Phone number</span>
+            <input
+              type="tel"
+              class="cgpt-login-input"
+              id="cgptLoginPhone"
+              placeholder="10-digit phone"
+              autocomplete="tel"
+            />
+          </label>
+
+          <label class="cgpt-login-field">
+            <span>Password</span>
+            <input
+              type="password"
+              class="cgpt-login-input"
+              id="cgptLoginPass"
+              placeholder="vishal-pass"
+              autocomplete="current-password"
+            />
+          </label>
+
+          <label class="cgpt-login-field">
+            <span>OTP</span>
+            <div class="cgpt-otp-row">
+              <input
+                type="text"
+                class="cgpt-login-input"
+                id="cgptLoginOtp"
+                placeholder="Enter OTP sent to your phone"
+                inputmode="numeric"
+                maxlength="6"
+              />
+              <button type="button" class="cgpt-otp-btn" id="cgptSendOtpBtn">
+                Send OTP
+              </button>
+            </div>
+            <div class="cgpt-login-hint" id="cgptOtpStatus">
+              Enter the OTP you receive. For this demo, it will appear here
+              after clicking <b>Send OTP</b>.
+            </div>
+          </label>
+
+          <div
+            class="cgpt-login-error"
+            id="cgptLoginError"
+            aria-live="polite"
+          ></div>
+
+          <div class="cgpt-login-actions">
+            <button type="submit" class="cgpt-login-primary">Sign in</button>
+            <button
+              type="button"
+              class="cgpt-login-secondary"
+              id="cgptLoginCancel"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <script src="js/utils/dom.js"></script>
+    <script src="js/utils/time.js"></script>
+
+    <script src="js/core/state.js"></script>
+
+    <script src="js/ui/chatUI.js"></script>
+    <script src="js/ui/themeUI.js"></script>
+    <script src="js/ui/modalLogin.js"></script>
+
+    <script src="js/auth/otpDemo.js"></script>
+
     <script src="js/widget.js"></script>
   </body>
 </html>
