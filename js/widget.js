@@ -1,7 +1,16 @@
 // js/widget.js
 (function () {
-  const API_BASE = "https://chat-bot-tcs.onrender.com"; // backend
+  // -------------------------------
+  // CONFIG
+  // -------------------------------
+  // Use your Render backend URL:
+  const API_BASE = "https://chat-bot-tcs.onrender.com";
+  // For local dev instead, comment above and uncomment below:
+  // const API_BASE = "http://localhost:4000";
 
+  // -------------------------------
+  // DOM ELEMENTS
+  // -------------------------------
   const panel = document.querySelector(".cgpt-panel");
   const btn = document.querySelector(".cgpt-btn");
   const input = document.querySelector("#cgptInput");
@@ -29,15 +38,17 @@
   const sendOtpBtn = document.querySelector("#cgptSendOtpBtn");
   const otpStatus = document.querySelector("#cgptOtpStatus");
 
-  // ---------- SESSION / AUTH STATE ----------
+  // -------------------------------
+  // SESSION / AUTH STATE
+  // -------------------------------
   const SESSION_DURATION_MS = 10 * 60 * 1000; // 10 mins inactivity
-  let authToken = null; // JWT from backend, kept only in memory
+  let authToken = null;
   let isLoggedIn = false;
   let lastActivity = 0;
   let sessionTimeoutId = null;
 
-  // menu vs LLM modes
-  let appMode = "menu";
+  // app modes
+  let appMode = "menu"; // 'menu' | 'llm'
 
   function updateAuthUI() {
     if (!loginBtn) return;
@@ -46,7 +57,7 @@
       if (subtitleEl) subtitleEl.textContent = "Signed in";
     } else {
       loginBtn.textContent = "Log in";
-      if (subtitleEl) subtitleEl.textContent = "Assistant";
+      if (subtitleEl) subtitleEl.textContent = "Bank Bot 🤖";
     }
   }
 
@@ -59,6 +70,8 @@
       sessionTimeoutId = null;
     }
     updateAuthUI();
+
+    if (!window.CGPT_CHAT) return;
 
     if (reason === "inactivity") {
       window.CGPT_CHAT.appendMessage(
@@ -94,89 +107,101 @@
     scheduleSessionTimeout();
   }
 
-  updateAuthUI(); // we always start logged out on refresh
+  updateAuthUI();
 
-  // ---------- PANEL OPEN/CLOSE ----------
+  // -------------------------------
+  // PANEL OPEN/CLOSE
+  // -------------------------------
   function openPanel() {
+    if (!panel) return;
     panel.style.display = "flex";
     panel.classList.add("open");
     panel.setAttribute("aria-hidden", "false");
-    setTimeout(() => input.focus(), 130);
+    setTimeout(() => input && input.focus(), 130);
     markActivity();
   }
 
   function closePanel() {
+    if (!panel) return;
     panel.classList.remove("open");
     panel.style.display = "none";
     panel.setAttribute("aria-hidden", "true");
   }
 
-  btn.addEventListener("click", () => {
-    if (panel.classList.contains("open")) closePanel();
-    else openPanel();
-  });
+  if (btn) {
+    btn.addEventListener("click", () => {
+      if (panel && panel.classList.contains("open")) closePanel();
+      else openPanel();
+    });
+  }
 
-  // ---------- LOGIN MODAL OPEN/CLOSE ----------
+  // -------------------------------
+  // LOGIN MODAL OPEN/CLOSE
+  // -------------------------------
   function clearLoginFields() {
-    loginUser.value = "";
-    loginPass.value = "";
-    loginPhone.value = "";
-    loginEmail.value = "";
-    loginOtp.value = "";
-    loginError.textContent = "";
-    otpStatus.textContent = "";
+    if (loginUser) loginUser.value = "";
+    if (loginPass) loginPass.value = "";
+    if (loginPhone) loginPhone.value = "";
+    if (loginEmail) loginEmail.value = "";
+    if (loginOtp) loginOtp.value = "";
+    if (loginError) loginError.textContent = "";
+    if (otpStatus) {
+      otpStatus.textContent = "";
+      otpStatus.style.color = "";
+    }
   }
 
   function openLoginModal() {
+    if (!loginModal) return;
     loginModal.style.display = "flex";
     loginModal.classList.add("open");
     loginModal.setAttribute("aria-hidden", "false");
 
-    loginError.textContent = "";
-    otpStatus.textContent =
-      "Choose OTP method, enter phone/email, then click Send OTP.";
-    otpStatus.style.color = "var(--cgpt-muted)";
+    if (loginError) loginError.textContent = "";
+    if (otpStatus) {
+      otpStatus.textContent =
+        "Choose OTP method, enter phone/email, then click Send OTP.";
+      otpStatus.style.color = "var(--cgpt-muted)";
+    }
 
-    // default to phone mode
-    loginMethod.value = "phone";
-    phoneField.style.display = "";
-    emailField.style.display = "none";
+    if (loginMethod) loginMethod.value = "phone";
+    if (phoneField) phoneField.style.display = "";
+    if (emailField) emailField.style.display = "none";
 
-    loginUser.focus();
+    loginUser && loginUser.focus();
   }
 
   function closeLoginModal() {
+    if (!loginModal) return;
     loginModal.classList.remove("open");
     loginModal.style.display = "none";
     loginModal.setAttribute("aria-hidden", "true");
     clearLoginFields();
   }
 
-  loginBtn.addEventListener("click", () => {
-    if (isLoggedIn) {
-      forceLogout("manual");
-    } else {
-      openLoginModal();
-    }
-  });
+  if (loginBtn) {
+    loginBtn.addEventListener("click", () => {
+      if (isLoggedIn) {
+        forceLogout("manual");
+      } else {
+        openLoginModal();
+      }
+    });
+  }
 
-  loginClose.addEventListener("click", closeLoginModal);
-  loginCancel.addEventListener("click", closeLoginModal);
+  loginClose && loginClose.addEventListener("click", closeLoginModal);
+  loginCancel && loginCancel.addEventListener("click", closeLoginModal);
 
-  // click backdrop
-  loginModal.addEventListener("click", (e) => {
-    if (e.target === loginModal) closeLoginModal();
-  });
+  loginModal &&
+    loginModal.addEventListener("click", (e) => {
+      if (e.target === loginModal) closeLoginModal();
+    });
 
-  // ESC key: close modal first, then panel
   document.addEventListener("keydown", (e) => {
     if (e.key === "Escape") {
-      if (
-        loginModal.classList.contains("open") &&
-        loginModal.style.display !== "none"
-      ) {
+      if (loginModal && loginModal.classList.contains("open")) {
         closeLoginModal();
-      } else if (panel.classList.contains("open")) {
+      } else if (panel && panel.classList.contains("open")) {
         closePanel();
       }
     }
@@ -184,33 +209,45 @@
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {
       e.preventDefault();
       openPanel();
-      input.focus();
+      input && input.focus();
     }
   });
 
-  // ---------- OTP METHOD SWITCH (phone/email) ----------
-  loginMethod.addEventListener("change", () => {
-    const method = loginMethod.value;
-    if (method === "phone") {
-      phoneField.style.display = "";
-      emailField.style.display = "none";
-    } else {
-      phoneField.style.display = "none";
-      emailField.style.display = "";
-    }
-    otpStatus.textContent =
-      "Enter your " +
-      (method === "phone" ? "phone number" : "email") +
-      " and click Send OTP.";
-    otpStatus.style.color = "var(--cgpt-muted)";
-  });
+  // -------------------------------
+  // OTP METHOD SWITCH
+  // -------------------------------
+  if (loginMethod) {
+    loginMethod.addEventListener("change", () => {
+      const method = loginMethod.value;
+      if (method === "phone") {
+        if (phoneField) phoneField.style.display = "";
+        if (emailField) emailField.style.display = "none";
+      } else {
+        if (phoneField) phoneField.style.display = "none";
+        if (emailField) emailField.style.display = "";
+      }
+      if (otpStatus) {
+        otpStatus.textContent =
+          "Enter your " +
+          (method === "phone" ? "phone number" : "email") +
+          " and click Send OTP.";
+        otpStatus.style.color = "var(--cgpt-muted)";
+      }
+    });
+  }
 
-  // ---------- SHARE BUTTON ----------
-  shareBtn.addEventListener("click", () => {
-    window.open(window.location.href, "_blank", "noopener,noreferrer");
-  });
+  // -------------------------------
+  // SHARE BUTTON
+  // -------------------------------
+  if (shareBtn) {
+    shareBtn.addEventListener("click", () => {
+      window.open(window.location.href, "_blank", "noopener,noreferrer");
+    });
+  }
 
-  // ---------- SIMPLE API HELPERS ----------
+  // -------------------------------
+  // API HELPERS
+  // -------------------------------
   async function apiPost(path, body) {
     const res = await fetch(API_BASE + path, {
       method: "POST",
@@ -221,17 +258,26 @@
       body: JSON.stringify(body),
     });
 
+    const text = await res.text();
+
     if (res.status === 401) {
       forceLogout("auth");
-      throw new Error("Unauthorized");
     }
 
     if (!res.ok) {
-      const text = await res.text();
+      // try to parse { error: "..."}
+      try {
+        const json = JSON.parse(text);
+        if (json && json.error) {
+          throw new Error(json.error);
+        }
+      } catch {
+        // ignore parse error, fall back
+      }
       throw new Error(text || "API error");
     }
 
-    return res.json();
+    return text ? JSON.parse(text) : {};
   }
 
   async function apiGet(path) {
@@ -242,127 +288,156 @@
       },
     });
 
+    const text = await res.text();
+
     if (res.status === 401) {
       forceLogout("auth");
-      throw new Error("Unauthorized");
     }
 
     if (!res.ok) {
-      const text = await res.text();
-      throw new Error(text || "API error");
-    }
-
-    return res.json();
-  }
-
-  // ---------- SEND OTP (backend) ----------
-  sendOtpBtn.addEventListener("click", async () => {
-    const method = loginMethod.value;
-    const phone = loginPhone.value.trim();
-    const email = loginEmail.value.trim();
-
-    otpStatus.style.color = "var(--cgpt-muted)";
-
-    try {
-      if (method === "phone") {
-        if (!/^\d{10}$/.test(phone)) {
-          otpStatus.textContent = "Enter a valid 10-digit phone number.";
-          otpStatus.style.color = "#ef4444";
-          return;
-        }
-        await apiPost("/auth/send-otp", { method: "phone", phone });
-        otpStatus.textContent = `OTP sent to phone ${phone} (in this demo, check server logs).`;
-      } else {
-        if (!email || !email.includes("@")) {
-          otpStatus.textContent = "Enter a valid email.";
-          otpStatus.style.color = "#ef4444";
-          return;
-        }
-        await apiPost("/auth/send-otp", { method: "email", email });
-        otpStatus.textContent = `OTP sent to email ${email} (in this demo, check server logs).`;
-      }
-    } catch (err) {
-      console.error(err);
-      otpStatus.textContent = "Failed to send OTP. Check backend.";
-      otpStatus.style.color = "#ef4444";
-    }
-  });
-
-  // ---------- LOGIN SUBMIT (backend) ----------
-  loginForm.addEventListener("submit", async (e) => {
-    e.preventDefault();
-    const username = loginUser.value.trim();
-    const password = loginPass.value.trim();
-    const method = loginMethod.value;
-    const phone = loginPhone.value.trim();
-    const email = loginEmail.value.trim();
-    const otp = loginOtp.value.trim();
-
-    loginError.textContent = "";
-
-    if (!username || !password || !otp) {
-      loginError.textContent = "Username, password and OTP are required.";
-      return;
-    }
-
-    if (method === "phone" && !/^\d{10}$/.test(phone)) {
-      loginError.textContent = "Enter a valid 10-digit phone number.";
-      return;
-    }
-    if (method === "email" && (!email || !email.includes("@"))) {
-      loginError.textContent = "Enter a valid email.";
-      return;
-    }
-
-    try {
-      const payload = {
-        username,
-        password,
-        method,
-        otp,
-      };
-      if (method === "phone") payload.phone = phone;
-      if (method === "email") payload.email = email;
-
-      const res = await apiPost("/auth/login", payload);
-      authToken = res.token;
-      isLoggedIn = true;
-      lastActivity = Date.now();
-      scheduleSessionTimeout();
-      updateAuthUI();
-
-      closeLoginModal();
-
-      window.CGPT_CHAT.appendMessage(
-        "bot",
-        `Welcome, ${res.user.name}!\nYour secure banking session is now active.`
-      );
-
-      appMode = "menu";
-      showBankingMenu();
-    } catch (err) {
-      console.error(err);
-      let msg = "Login failed. Check credentials and OTP.";
       try {
-        const parsed = JSON.parse(err.message);
-        if (parsed.error) msg = parsed.error;
+        const json = JSON.parse(text);
+        if (json && json.error) {
+          throw new Error(json.error);
+        }
       } catch {
         // ignore
       }
-      loginError.textContent = msg;
-      isLoggedIn = false;
-      authToken = null;
-      lastActivity = 0;
-      if (sessionTimeoutId) {
-        clearTimeout(sessionTimeoutId);
-        sessionTimeoutId = null;
-      }
-      updateAuthUI();
+      throw new Error(text || "API error");
     }
-  });
 
-  // ---------- BANKING MENU & HANDLERS (using backend) ----------
+    return text ? JSON.parse(text) : {};
+  }
+
+  // -------------------------------
+  // SEND OTP
+  // -------------------------------
+  if (sendOtpBtn) {
+    sendOtpBtn.addEventListener("click", async () => {
+      if (!loginMethod || !otpStatus) return;
+      const method = loginMethod.value;
+      const phone = loginPhone ? loginPhone.value.trim() : "";
+      const email = loginEmail ? loginEmail.value.trim() : "";
+
+      otpStatus.style.color = "var(--cgpt-muted)";
+
+      try {
+        if (method === "phone") {
+          if (!/^\d{10}$/.test(phone)) {
+            otpStatus.textContent = "Enter a valid 10-digit phone number.";
+            otpStatus.style.color = "#ef4444";
+            return;
+          }
+          await apiPost("/auth/send-otp", { method: "phone", phone });
+          otpStatus.textContent =
+            "OTP request sent for phone " +
+            phone +
+            ". (If in demo, check backend logs.)";
+        } else {
+          if (!email || !email.includes("@")) {
+            otpStatus.textContent = "Enter a valid email.";
+            otpStatus.style.color = "#ef4444";
+            return;
+          }
+          await apiPost("/auth/send-otp", { method: "email", email });
+          otpStatus.textContent =
+            "OTP request sent for email " +
+            email +
+            ". (If in demo, check backend logs.)";
+        }
+      } catch (err) {
+        console.error(err);
+        otpStatus.textContent =
+          err && err.message
+            ? err.message
+            : "Failed to send OTP. Check backend.";
+        otpStatus.style.color = "#ef4444";
+      }
+    });
+  }
+
+  // -------------------------------
+  // LOGIN SUBMIT
+  // -------------------------------
+  if (loginForm) {
+    loginForm.addEventListener("submit", async (e) => {
+      e.preventDefault();
+      if (!loginUser || !loginPass || !loginMethod || !loginOtp || !loginError)
+        return;
+
+      const username = loginUser.value.trim();
+      const password = loginPass.value.trim();
+      const method = loginMethod.value;
+      const phone = loginPhone ? loginPhone.value.trim() : "";
+      const email = loginEmail ? loginEmail.value.trim() : "";
+      const otp = loginOtp.value.trim();
+
+      loginError.textContent = "";
+
+      if (!username || !password || !otp) {
+        loginError.textContent = "Username, password and OTP are required.";
+        return;
+      }
+
+      if (method === "phone" && !/^\d{10}$/.test(phone)) {
+        loginError.textContent = "Enter a valid 10-digit phone number.";
+        return;
+      }
+      if (method === "email" && (!email || !email.includes("@"))) {
+        loginError.textContent = "Enter a valid email.";
+        return;
+      }
+
+      try {
+        const payload = {
+          username,
+          password,
+          method,
+          otp,
+        };
+        if (method === "phone") payload.phone = phone;
+        if (method === "email") payload.email = email;
+
+        const res = await apiPost("/auth/login", payload);
+        authToken = res.token;
+        isLoggedIn = true;
+        lastActivity = Date.now();
+        scheduleSessionTimeout();
+        updateAuthUI();
+
+        closeLoginModal();
+
+        if (window.CGPT_CHAT) {
+          window.CGPT_CHAT.appendMessage(
+            "bot",
+            `Welcome, ${res.user.name}!\nYour secure banking session is now active.`
+          );
+        }
+
+        appMode = "menu";
+        showBankingMenu();
+      } catch (err) {
+        console.error(err);
+        const msg =
+          (err && err.message) || "Login failed. Check credentials and OTP.";
+        loginError.textContent = msg;
+        isLoggedIn = false;
+        authToken = null;
+        lastActivity = 0;
+        if (sessionTimeoutId) {
+          clearTimeout(sessionTimeoutId);
+          sessionTimeoutId = null;
+        }
+        updateAuthUI();
+      }
+    });
+  }
+
+  // -------------------------------
+  // BANKING MENU & HANDLERS
+  // -------------------------------
   function showBankingMenu() {
+    if (!window.CGPT_CHAT) return;
     window.CGPT_CHAT.appendMessage(
       "bot",
       "Please choose an option:\n\n" +
@@ -375,6 +450,7 @@
   }
 
   async function handleBalance() {
+    if (!window.CGPT_CHAT) return;
     if (!authToken) {
       window.CGPT_CHAT.appendMessage(
         "bot",
@@ -395,7 +471,7 @@
       console.error(err);
       window.CGPT_CHAT.appendMessage(
         "bot",
-        "Unable to fetch balance right now."
+        err.message || "Unable to fetch balance right now."
       );
     }
   }
@@ -406,6 +482,7 @@
   }
 
   async function handleMiniStatement() {
+    if (!window.CGPT_CHAT) return;
     if (!authToken) {
       window.CGPT_CHAT.appendMessage(
         "bot",
@@ -422,11 +499,15 @@
       );
     } catch (err) {
       console.error(err);
-      window.CGPT_CHAT.appendMessage("bot", "Unable to fetch mini statement.");
+      window.CGPT_CHAT.appendMessage(
+        "bot",
+        err.message || "Unable to fetch mini statement."
+      );
     }
   }
 
   async function handleFullStatement() {
+    if (!window.CGPT_CHAT) return;
     if (!authToken) {
       window.CGPT_CHAT.appendMessage(
         "bot",
@@ -445,12 +526,13 @@
       console.error(err);
       window.CGPT_CHAT.appendMessage(
         "bot",
-        "Unable to fetch account statement."
+        err.message || "Unable to fetch account statement."
       );
     }
   }
 
   async function handleFAQ() {
+    if (!window.CGPT_CHAT) return;
     try {
       const data = await apiGet("/bank/faq");
       if (data.faq) {
@@ -465,12 +547,16 @@
       }
     } catch (err) {
       console.error(err);
-      window.CGPT_CHAT.appendMessage("bot", "Unable to fetch FAQ.");
+      window.CGPT_CHAT.appendMessage(
+        "bot",
+        err.message || "Unable to fetch FAQ."
+      );
     }
   }
 
   function enterLLMMode() {
     appMode = "llm";
+    if (!window.CGPT_CHAT) return;
     window.CGPT_CHAT.appendMessage(
       "bot",
       "You are now chatting with the support bot (LLM mode).\n" +
@@ -481,11 +567,14 @@
 
   function backToMenu() {
     appMode = "menu";
+    if (!window.CGPT_CHAT) return;
     window.CGPT_CHAT.appendMessage("bot", "Switched back to banking options.");
     showBankingMenu();
   }
 
-  // ---------- ROUTING USER INPUT ----------
+  // -------------------------------
+  // ROUTING USER INPUT
+  // -------------------------------
   function handleMenuInput(raw) {
     const msg = raw.trim().toLowerCase();
 
@@ -510,6 +599,7 @@
       return;
     }
 
+    if (!window.CGPT_CHAT) return;
     window.CGPT_CHAT.appendMessage(
       "bot",
       "Sorry, I didn't understand that.\nPlease choose 1, 2, 3, 4, or 5."
@@ -524,7 +614,7 @@
       return;
     }
 
-    // Demo LLM: just echo with label
+    if (!window.CGPT_CHAT) return;
     window.CGPT_CHAT.botEcho(
       "LLM (demo) response based on your query:\n\n" +
         raw +
@@ -533,6 +623,8 @@
   }
 
   function handleUserInput(raw) {
+    if (!window.CGPT_CHAT) return;
+
     if (!isLoggedIn) {
       window.CGPT_CHAT.appendMessage(
         "bot",
@@ -550,8 +642,11 @@
     }
   }
 
-  // ---------- COMPOSER ----------
+  // -------------------------------
+  // COMPOSER
+  // -------------------------------
   function sendFromComposer() {
+    if (!input || !window.CGPT_CHAT) return;
     const value = input.value.trim();
     if (!value) return;
 
@@ -562,29 +657,35 @@
     handleUserInput(value);
   }
 
-  send.addEventListener("click", sendFromComposer);
+  send && send.addEventListener("click", sendFromComposer);
 
-  input.addEventListener("keydown", (e) => {
-    if (e.key === "Enter" && !e.shiftKey) {
-      e.preventDefault();
-      sendFromComposer();
-    }
-  });
+  input &&
+    input.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" && !e.shiftKey) {
+        e.preventDefault();
+        sendFromComposer();
+      }
+    });
 
-  input.addEventListener("input", () => {
-    input.style.height = "auto";
-    input.style.height = Math.min(input.scrollHeight, 200) + "px";
-  });
+  input &&
+    input.addEventListener("input", () => {
+      input.style.height = "auto";
+      input.style.height = Math.min(input.scrollHeight, 200) + "px";
+    });
 
-  // ---------- INITIAL GREETING ----------
-  window.CGPT_CHAT.appendMessage(
-    "bot",
-    "Hey! I’m the C-GPT Banking demo.\n\n" +
-      "You can log in via phone+OTP or email+OTP using the Log in button.\n" +
-      "Once logged in, I’ll show you banking options and you can switch to LLM chat for complex queries."
-  );
+  // -------------------------------
+  // INITIAL GREETING
+  // -------------------------------
+  if (window.CGPT_CHAT) {
+    window.CGPT_CHAT.appendMessage(
+      "bot",
+      "Hey! I’m the C-GPT Banking demo.\n\n" +
+        "You can log in via phone+OTP or email+OTP using the Log in button.\n" +
+        "Once logged in, I’ll show you banking options and you can switch to LLM chat for complex queries."
+    );
+  }
 
-  // dev hook
+  // Expose some controls for debugging
   window.CGPT_WIDGET = {
     open: openPanel,
     close: closePanel,

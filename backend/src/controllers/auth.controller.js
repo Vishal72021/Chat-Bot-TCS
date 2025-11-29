@@ -4,7 +4,12 @@ import {
   findUserByUsername,
   verifyPassword,
 } from "../services/user.service.js";
-import { createOtp, verifyOtp } from "../services/otp.service.js";
+import {
+  createOtp,
+  verifyOtp,
+  sendEmailOtp,
+  sendPhoneOtp,
+} from "../services/otp.service.js";
 
 // POST /auth/send-otp
 export async function sendOtp(req, res) {
@@ -28,7 +33,7 @@ export async function sendOtp(req, res) {
     return res.status(400).json({ error: "Invalid method" });
   } catch (err) {
     console.error(err);
-    return res.status(500).json({ error: "Failed to send OTP" });
+    return res.status(500).json({ error: "Failed to send OTP" + err.message });
   }
 }
 
