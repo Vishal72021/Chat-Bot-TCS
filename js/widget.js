@@ -1,6 +1,6 @@
 // js/widget.js
 (function () {
-  const API_BASE = "http://localhost:4000"; // backend
+  const API_BASE = "https://chat-bot-tcs.onrender.com"; // backend
 
   const panel = document.querySelector(".cgpt-panel");
   const btn = document.querySelector(".cgpt-btn");
