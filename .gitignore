@@ -1,0 +1,15 @@
+# Frontend junk
+.DS_Store
+Thumbs.db
+
+# Backend protection
+backend/node_modules/
+backend/.env
+backend/.env.*
+
+# Logs
+*.log
+
+# IDE
+.vscode/
+.idea/

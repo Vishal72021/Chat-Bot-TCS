@@ -117,6 +117,7 @@
         </div>
 
         <form class="cgpt-login-body" id="cgptLoginForm">
+          <!-- Username -->
           <label class="cgpt-login-field">
             <span>Username</span>
             <input
@@ -128,17 +129,7 @@
             />
           </label>
 
-          <label class="cgpt-login-field">
-            <span>Phone number</span>
-            <input
-              type="tel"
-              class="cgpt-login-input"
-              id="cgptLoginPhone"
-              placeholder="10-digit phone"
-              autocomplete="tel"
-            />
-          </label>
-
+          <!-- Password -->
           <label class="cgpt-login-field">
             <span>Password</span>
             <input
@@ -150,24 +141,62 @@
             />
           </label>
 
+          <!-- OTP method selector -->
+          <label class="cgpt-login-field">
+            <span>OTP Method</span>
+            <select class="cgpt-login-input" id="cgptLoginMethod">
+              <option value="phone">Phone OTP</option>
+              <option value="email">Email OTP</option>
+            </select>
+          </label>
+
+          <!-- Phone field -->
+          <label class="cgpt-login-field" id="cgptPhoneField">
+            <span>Phone number</span>
+            <input
+              type="tel"
+              class="cgpt-login-input"
+              id="cgptLoginPhone"
+              placeholder="10-digit phone"
+              autocomplete="tel"
+            />
+          </label>
+
+          <!-- Email field (hidden by default, shown when method=email) -->
+          <label
+            class="cgpt-login-field"
+            id="cgptEmailField"
+            style="display: none"
+          >
+            <span>Email</span>
+            <input
+              type="email"
+              class="cgpt-login-input"
+              id="cgptLoginEmail"
+              placeholder="vishal@example.com"
+              autocomplete="email"
+            />
+          </label>
+
+          <!-- OTP row -->
           <label class="cgpt-login-field">
             <span>OTP</span>
             <div class="cgpt-otp-row">
+              <button type="button" class="cgpt-otp-btn" id="cgptSendOtpBtn">
+                Send OTP
+              </button>
               <input
                 type="text"
                 class="cgpt-login-input"
                 id="cgptLoginOtp"
-                placeholder="Enter OTP sent to your phone"
+                placeholder="Enter OTP"
                 inputmode="numeric"
                 maxlength="6"
               />
-              <button type="button" class="cgpt-otp-btn" id="cgptSendOtpBtn">
-                Send OTP
-              </button>
             </div>
             <div class="cgpt-login-hint" id="cgptOtpStatus">
-              Enter the OTP you receive. For this demo, it will appear here
-              after clicking <b>Send OTP</b>.
+              Choose OTP method, enter your phone/email, then click
+              <b>Send OTP</b>.
             </div>
           </label>
 
@@ -191,17 +220,9 @@
       </div>
     </div>
 
-    <script src="js/utils/dom.js"></script>
-    <script src="js/utils/time.js"></script>
-
-    <script src="js/core/state.js"></script>
-
+    <!-- JS: only the 3 active modules -->
     <script src="js/ui/chatUI.js"></script>
     <script src="js/ui/themeUI.js"></script>
-    <script src="js/ui/modalLogin.js"></script>
-
-    <script src="js/auth/otpDemo.js"></script>
-
     <script src="js/widget.js"></script>
   </body>
 </html>
