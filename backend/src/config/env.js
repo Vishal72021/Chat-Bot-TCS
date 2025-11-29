@@ -8,10 +8,17 @@ export const config = {
     port: Number(process.env.DB_PORT || 5432),
     user: process.env.DB_USER,
     password: process.env.DB_PASSWORD,
-    database: process.env.DB_NAME
+    database: process.env.DB_NAME,
   },
   jwt: {
     secret: process.env.JWT_SECRET || "dev-secret",
-    expiresIn: process.env.JWT_EXPIRES_IN || "10m"
-  }
+    expiresIn: process.env.JWT_EXPIRES_IN || "10m",
+  },
+  smtp: {
+    host: process.env.SMTP_HOST,
+    port: Number(process.env.SMTP_PORT || 587),
+    user: process.env.SMTP_USER,
+    pass: process.env.SMTP_PASS,
+    from: process.env.SMTP_FROM || "no-reply@example.com",
+  },
 };

@@ -1,21 +1,27 @@
 import jwt from "jsonwebtoken";
 import { config } from "../config/env.js";
-import { findUserByUsername, verifyPassword } from "../services/user.service.js";
+import {
+  findUserByUsername,
+  verifyPassword,
+} from "../services/user.service.js";
 import { createOtp, verifyOtp } from "../services/otp.service.js";
 
+// POST /auth/send-otp
 export async function sendOtp(req, res) {
   try {
     const { method, email, phone } = req.body;
 
     if (method === "email") {
       if (!email) return res.status(400).json({ error: "Email is required" });
-      await createOtp(email, "email");
+      const otp = await createOtp(email, "email");
+      await sendEmailOtp(email, otp);
       return res.json({ ok: true, via: "email" });
     }
 
     if (method === "phone") {
       if (!phone) return res.status(400).json({ error: "Phone is required" });
-      await createOtp(phone, "phone");
+      const otp = await createOtp(phone, "phone");
+      await sendPhoneOtp(phone, otp);
       return res.json({ ok: true, via: "phone" });
     }
 
@@ -39,11 +45,13 @@ export async function login(req, res) {
     let contact, type;
 
     if (method === "email") {
-      if (email !== user.email) return res.status(401).json({ error: "Email mismatch" });
+      if (email !== user.email)
+        return res.status(401).json({ error: "Email mismatch" });
       contact = email;
       type = "email";
     } else {
-      if (phone !== user.phone) return res.status(401).json({ error: "Phone mismatch" });
+      if (phone !== user.phone)
+        return res.status(401).json({ error: "Phone mismatch" });
       contact = phone;
       type = "phone";
     }
@@ -63,8 +71,8 @@ export async function login(req, res) {
         customerId: user.customer_id,
         name: user.name,
         email: user.email,
-        phone: user.phone
-      }
+        phone: user.phone,
+      },
     });
   } catch (err) {
     console.error(err);
