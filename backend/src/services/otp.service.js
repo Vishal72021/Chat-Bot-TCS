@@ -1,4 +1,3 @@
-import fetch from "node-fetch";
 import { query } from "../config/db.js";
 import { config } from "../config/env.js";
 
