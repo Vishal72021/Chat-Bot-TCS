@@ -69,7 +69,7 @@ export async function sendEmailOtp(email, otp) {
   try {
     initSendGrid();
 
-    const from = config.sendgrid.from;
+    const fromEmail = config.sendgrid.from;
 
     const msg = {
       to: email,
