@@ -4,9 +4,9 @@ import bcrypt from "bcrypt";
 
 async function main() {
   try {
-    const username = "vishal-chat";
-    const plainPassword = "vishal-pass";
-    const email = "vishal@example.com";
+    const username = "vishal-tripathy";
+    const plainPassword = "tripathyvishal";
+    const email = "tripathyvishal7@gmail.com";
     const phone = "9178332513";
     const name = "Vishal Tripathy";
     const customerId = "CUST001";

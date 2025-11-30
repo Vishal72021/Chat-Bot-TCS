@@ -4,9 +4,9 @@
   // CONFIG
   // -------------------------------
   // Use your Render backend URL:
-  // const API_BASE = "https://chat-bot-tcs.onrender.com";
+  const API_BASE = "https://chat-bot-tcs.onrender.com";
   // For local dev instead, comment above and uncomment below:
-  const API_BASE = "http://localhost:4000";
+  // const API_BASE = "http://localhost:4000";
 
   // -------------------------------
   // DOM ELEMENTS

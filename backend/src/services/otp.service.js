@@ -59,6 +59,15 @@ function getTransporter() {
 
   const { host, port, user, pass, secure } = config.smtp;
 
+  // DEBUG LOG – remove later
+  console.log("SMTP config debug:", {
+    host,
+    port,
+    user,
+    hasPass: !!pass,
+    secure,
+  });
+
   if (!host || !user || !pass) {
     throw new Error("SMTP is not configured (host/user/pass missing)");
   }
@@ -66,7 +75,7 @@ function getTransporter() {
   transporter = nodemailer.createTransport({
     host,
     port,
-    secure, // true for port 465, false for 587
+    secure,
     auth: {
       user,
       pass,
