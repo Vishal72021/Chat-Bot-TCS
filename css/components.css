@@ -1,3 +1,7 @@
+/* ===============================
+   CORE COMPONENT STYLES
+   =============================== */
+
 /* Logo styling using theme colors */
 .cgpt-logo {
   background: linear-gradient(
@@ -31,7 +35,6 @@ html[data-cgpt-theme="black"] .cgpt-theme-opt:hover {
 }
 
 /* Buttons hover/active */
-
 .cgpt-send:hover,
 .cgpt-login-primary:hover,
 .cgpt-otp-btn:hover,
@@ -46,8 +49,6 @@ html[data-cgpt-theme="black"] .cgpt-theme-opt:hover {
   box-shadow: 0 6px 16px rgba(248, 113, 113, 0.45);
 }
 
-/* Share & login chips hover are already styled via theme.css */
-
 /* Close button subtle opacity */
 .cgpt-login-close {
   opacity: 0.7;
@@ -60,4 +61,126 @@ html[data-cgpt-theme="black"] .cgpt-theme-opt:hover {
 /* Slight message shadow refinement */
 .cgpt-msg {
   box-shadow: 0 8px 18px rgba(15, 23, 42, 0.08);
+}
+
+/* ===============================
+   BANKING MENU BAR + UPLOAD (SCROLLABLE)
+   =============================== */
+
+/* Bar between chat body and composer */
+.cgpt-menu-bar {
+  display: none; /* shown via JS */
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.5rem 0.75rem;
+
+  /* SCROLL FIX */
+  overflow-x: auto;
+  overflow-y: hidden;
+  white-space: nowrap;
+  scroll-behavior: smooth;
+
+  border-top: 1px solid var(--cgpt-border-subtle);
+  border-bottom: 1px solid var(--cgpt-border-subtle);
+  background: var(--cgpt-panel-bg-alt);
+  backdrop-filter: blur(10px);
+}
+
+/* Scrollbar styling */
+.cgpt-menu-bar::-webkit-scrollbar {
+  height: 6px;
+}
+.cgpt-menu-bar::-webkit-scrollbar-track {
+  background: transparent;
+}
+.cgpt-menu-bar::-webkit-scrollbar-thumb {
+  background: rgba(148, 163, 184, 0.4);
+  border-radius: 999px;
+}
+
+/* Theme-specific tweaks */
+html[data-cgpt-theme="black"] .cgpt-menu-bar {
+  background: var(--cgpt-panel-bg);
+}
+
+html[data-cgpt-theme="red"] .cgpt-menu-bar {
+  background: linear-gradient(
+    90deg,
+    rgba(248, 250, 252, 0.96),
+    rgba(254, 242, 242, 0.96)
+  );
+}
+
+/* Menu pill buttons */
+.cgpt-menu-btn {
+  flex-shrink: 0; /* prevents squeezing */
+  border: none;
+  border-radius: 999px;
+  padding: 0.35rem 0.8rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  cursor: pointer;
+  white-space: nowrap;
+  background: rgba(255, 255, 255, 0.9);
+  color: var(--cgpt-text);
+  box-shadow: 0 1px 1px rgba(15, 23, 42, 0.08);
+  transition: background 0.15s ease, transform 0.1s ease, box-shadow 0.15s ease;
+}
+
+.cgpt-menu-btn:hover {
+  background: #e5e7eb;
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(15, 23, 42, 0.12);
+}
+
+.cgpt-menu-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 3px rgba(15, 23, 42, 0.2);
+}
+
+/* Ghost style (LLM toggle) */
+.cgpt-menu-btn--ghost {
+  background: transparent;
+  border: 1px dashed rgba(148, 163, 184, 0.7);
+  color: #4b5563;
+}
+
+.cgpt-menu-btn--ghost:hover {
+  background: rgba(248, 250, 252, 0.7);
+}
+
+/* Upload button accent */
+.cgpt-menu-btn--upload {
+  background: var(--cgpt-accent-strong);
+  color: #ffffff;
+}
+
+.cgpt-menu-btn--upload:hover {
+  background: var(--cgpt-accent);
+}
+
+/* Dark theme variants */
+html[data-cgpt-theme="black"] .cgpt-menu-btn {
+  background: rgba(15, 23, 42, 0.96);
+  color: var(--cgpt-text);
+  border: 1px solid rgba(148, 163, 184, 0.4);
+}
+
+html[data-cgpt-theme="black"] .cgpt-menu-btn--upload {
+  background: var(--cgpt-accent-strong);
+  border-color: transparent;
+  color: #ffffff;
+}
+
+/* Upload button container */
+.cgpt-menu-upload-group {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  margin-left: 0; /* IMPORTANT: prevents cutting off on the right */
+}
+
+/* Hidden native file input */
+.cgpt-file-input {
+  display: none;
 }

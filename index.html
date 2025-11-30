@@ -4,7 +4,9 @@
     <meta charset="utf-8" />
     <title>C-GPT Chatbot Widget</title>
     <meta name="viewport" content="width=device-width,initial-scale=1" />
-    <link rel="stylesheet" href="css/widget.css" />
+    <link rel="stylesheet" href="css/base.css" />
+    <link rel="stylesheet" href="css/theme.css" />
+    <link rel="stylesheet" href="css/components.css" />
   </head>
   <body>
     <main class="page-wrapper">
@@ -60,10 +62,12 @@
                   <span class="cgpt-theme-sw cgpt-theme-sw--red"></span> Red
                 </div>
                 <div class="cgpt-theme-opt" data-theme="black">
-                  <span class="cgpt-theme-sw cgpt-theme-sw--black"></span> Black
+                  <span class="cgpt-theme-sw cgpt-theme-sw--black"></span>
+                  Black
                 </div>
                 <div class="cgpt-theme-opt" data-theme="white">
-                  <span class="cgpt-theme-sw cgpt-theme-sw--white"></span> White
+                  <span class="cgpt-theme-sw cgpt-theme-sw--white"></span>
+                  White
                 </div>
               </div>
             </div>
@@ -87,6 +91,43 @@
 
         <div class="cgpt-body" id="cgptBody" aria-live="polite"></div>
 
+        <!-- NEW: banking menu bar -->
+        <div class="cgpt-menu-bar" id="cgptMenuBar" aria-hidden="true">
+          <button class="cgpt-menu-btn" id="cgptBtnBalance">🏦 Balance</button>
+          <button class="cgpt-menu-btn" id="cgptBtnMini">📄 Mini stmt</button>
+          <button class="cgpt-menu-btn" id="cgptBtnFull">📑 Full stmt</button>
+          <button class="cgpt-menu-btn" id="cgptBtnFaq">❓ FAQ</button>
+          <button
+            class="cgpt-menu-btn cgpt-menu-btn--ghost"
+            id="cgptBtnLLM"
+            type="button"
+          >
+            🤖 Chat with bot
+          </button>
+
+          <div class="cgpt-menu-upload-group">
+            <button
+              class="cgpt-menu-btn cgpt-menu-btn--upload"
+              id="cgptUploadBtn"
+              type="button"
+            >
+              ⬆ Upload
+            </button>
+            <input
+              type="file"
+              id="cgptFileInput"
+              class="cgpt-file-input"
+              multiple
+              accept=".jpg,.jpeg,.png,.pdf,.xls,.xlsx,.doc,.docx,
+              application/pdf,
+              application/vnd.ms-excel,
+              application/vnd.openxmlformats-officedocument.spreadsheetml.sheet,
+              application/msword,
+              application/vnd.openxmlformats-officedocument.wordprocessingml.document"
+            />
+          </div>
+        </div>
+
         <div class="cgpt-composer">
           <textarea
             class="cgpt-textarea"
@@ -109,44 +150,42 @@
           ✕
         </button>
         <div class="cgpt-login-header">
-          <div class="cgpt-login-title">Sign in to C-GPT</div>
+          <div class="cgpt-login-title">Sign in to C-GPT Banking</div>
           <div class="cgpt-login-sub">
-            Demo credentials • Username: <b>vishal-chat</b>, Password:
-            <b>vishal-pass</b>
+            Demo credentials • Username: <b>vishal-tripathy</b>, Password:
+            <b>tripathyvishal</b>
           </div>
         </div>
 
         <form class="cgpt-login-body" id="cgptLoginForm">
-          <!-- Username -->
           <label class="cgpt-login-field">
             <span>Username</span>
             <input
               type="text"
               class="cgpt-login-input"
               id="cgptLoginUser"
-              placeholder="vishal-chat"
+              placeholder="vishal-tripathy"
               autocomplete="username"
             />
           </label>
 
-          <!-- Password -->
           <label class="cgpt-login-field">
             <span>Password</span>
             <input
               type="password"
               class="cgpt-login-input"
               id="cgptLoginPass"
-              placeholder="vishal-pass"
+              placeholder="tripathyvishal"
               autocomplete="current-password"
             />
           </label>
 
-          <!-- OTP method selector -->
+          <!-- OTP method -->
           <label class="cgpt-login-field">
-            <span>OTP Method</span>
+            <span>OTP method</span>
             <select class="cgpt-login-input" id="cgptLoginMethod">
-              <option value="phone">Phone OTP</option>
-              <option value="email">Email OTP</option>
+              <option value="phone">Phone (SMS demo)</option>
+              <option value="email">Email</option>
             </select>
           </label>
 
@@ -162,7 +201,7 @@
             />
           </label>
 
-          <!-- Email field (hidden by default, shown when method=email) -->
+          <!-- Email field -->
           <label
             class="cgpt-login-field"
             id="cgptEmailField"
@@ -173,18 +212,14 @@
               type="email"
               class="cgpt-login-input"
               id="cgptLoginEmail"
-              placeholder="vishal@example.com"
+              placeholder="you@example.com"
               autocomplete="email"
             />
           </label>
 
-          <!-- OTP row -->
           <label class="cgpt-login-field">
             <span>OTP</span>
             <div class="cgpt-otp-row">
-              <button type="button" class="cgpt-otp-btn" id="cgptSendOtpBtn">
-                Send OTP
-              </button>
               <input
                 type="text"
                 class="cgpt-login-input"
@@ -193,10 +228,12 @@
                 inputmode="numeric"
                 maxlength="6"
               />
+              <button type="button" class="cgpt-otp-btn" id="cgptSendOtpBtn">
+                Send OTP
+              </button>
             </div>
             <div class="cgpt-login-hint" id="cgptOtpStatus">
-              Choose OTP method, enter your phone/email, then click
-              <b>Send OTP</b>.
+              Choose OTP method, enter phone/email, then click <b>Send OTP</b>.
             </div>
           </label>
 
@@ -220,9 +257,6 @@
       </div>
     </div>
 
-    <!-- JS: only the 3 active modules -->
-    <script src="js/ui/chatUI.js"></script>
-    <script src="js/ui/themeUI.js"></script>
     <script src="js/widget.js"></script>
   </body>
 </html>

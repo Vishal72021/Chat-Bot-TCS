@@ -3,9 +3,8 @@
   // -------------------------------
   // CONFIG
   // -------------------------------
-  // Use your Render backend URL:
   const API_BASE = "https://chat-bot-tcs.onrender.com";
-  // For local dev instead, comment above and uncomment below:
+  // For local dev with local backend:
   // const API_BASE = "http://localhost:4000";
 
   // -------------------------------
@@ -15,6 +14,7 @@
   const btn = document.querySelector(".cgpt-btn");
   const input = document.querySelector("#cgptInput");
   const send = document.querySelector("#cgptSend");
+  const bodyEl = document.querySelector("#cgptBody");
 
   const shareBtn = document.querySelector("#cgptShareBtn");
   const loginBtn = document.querySelector("#cgptLoginBtn");
@@ -38,6 +38,16 @@
   const sendOtpBtn = document.querySelector("#cgptSendOtpBtn");
   const otpStatus = document.querySelector("#cgptOtpStatus");
 
+  // NEW: menu bar + buttons + upload
+  const menuBar = document.querySelector("#cgptMenuBar");
+  const btnBalance = document.querySelector("#cgptBtnBalance");
+  const btnMini = document.querySelector("#cgptBtnMini");
+  const btnFull = document.querySelector("#cgptBtnFull");
+  const btnFaq = document.querySelector("#cgptBtnFaq");
+  const btnLLM = document.querySelector("#cgptBtnLLM");
+  const uploadBtn = document.querySelector("#cgptUploadBtn");
+  const fileInput = document.querySelector("#cgptFileInput");
+
   // -------------------------------
   // SESSION / AUTH STATE
   // -------------------------------
@@ -47,9 +57,29 @@
   let lastActivity = 0;
   let sessionTimeoutId = null;
 
-  // app modes
-  let appMode = "menu"; // 'menu' | 'llm'
+  // app modes: menu | llm
+  let appMode = "menu";
 
+  // -------------------------------
+  // MENU BAR HELPERS
+  // -------------------------------
+  function showMenuBar() {
+    if (!menuBar) return;
+    menuBar.style.display = "flex";
+    menuBar.setAttribute("aria-hidden", "false");
+  }
+
+  function hideMenuBar() {
+    if (!menuBar) return;
+    menuBar.style.display = "none";
+    menuBar.setAttribute("aria-hidden", "true");
+  }
+
+  hideMenuBar(); // start hidden
+
+  // -------------------------------
+  // AUTH UI
+  // -------------------------------
   function updateAuthUI() {
     if (!loginBtn) return;
     if (isLoggedIn) {
@@ -70,6 +100,7 @@
       sessionTimeoutId = null;
     }
     updateAuthUI();
+    hideMenuBar();
 
     if (!window.CGPT_CHAT) return;
 
@@ -265,14 +296,13 @@
     }
 
     if (!res.ok) {
-      // try to parse { error: "..."}
       try {
         const json = JSON.parse(text);
         if (json && json.error) {
           throw new Error(json.error);
         }
       } catch {
-        // ignore parse error, fall back
+        // ignore parse
       }
       throw new Error(text || "API error");
     }
@@ -332,7 +362,7 @@
           otpStatus.textContent =
             "OTP request sent for phone " +
             phone +
-            ". (If in demo, check backend logs.)";
+            ". Please check your SMS (demo logs if configured).";
         } else {
           if (!email || !email.includes("@")) {
             otpStatus.textContent = "Enter a valid email.";
@@ -343,7 +373,7 @@
           otpStatus.textContent =
             "OTP request sent for email " +
             email +
-            ". (If in demo, check backend logs.)";
+            ". Please check your inbox.";
         }
       } catch (err) {
         console.error(err);
@@ -429,6 +459,7 @@
           sessionTimeoutId = null;
         }
         updateAuthUI();
+        hideMenuBar();
       }
     });
   }
@@ -438,9 +469,12 @@
   // -------------------------------
   function showBankingMenu() {
     if (!window.CGPT_CHAT) return;
+
+    showMenuBar();
+
     window.CGPT_CHAT.appendMessage(
       "bot",
-      "Please choose an option:\n\n" +
+      "Please choose an option (or use the buttons below):\n\n" +
         "1️⃣ Account Balance\n" +
         "2️⃣ Mini Statement (last 5 txns)\n" +
         "3️⃣ Account Statement (full)\n" +
@@ -556,6 +590,7 @@
 
   function enterLLMMode() {
     appMode = "llm";
+    hideMenuBar();
     if (!window.CGPT_CHAT) return;
     window.CGPT_CHAT.appendMessage(
       "bot",
@@ -602,7 +637,7 @@
     if (!window.CGPT_CHAT) return;
     window.CGPT_CHAT.appendMessage(
       "bot",
-      "Sorry, I didn't understand that.\nPlease choose 1, 2, 3, 4, or 5."
+      "Sorry, I didn't understand that.\nPlease choose 1, 2, 3, 4, or 5 (or use the buttons)."
     );
   }
 
@@ -672,6 +707,121 @@
       input.style.height = "auto";
       input.style.height = Math.min(input.scrollHeight, 200) + "px";
     });
+
+  // -------------------------------
+  // MENU BUTTON HANDLERS
+  // -------------------------------
+  if (btnBalance) {
+    btnBalance.addEventListener("click", () => {
+      if (!isLoggedIn) {
+        window.CGPT_CHAT?.appendMessage(
+          "bot",
+          "Please log in to view your balance."
+        );
+        return;
+      }
+      window.CGPT_CHAT?.appendMessage("user", "Show my account balance");
+      markActivity();
+      handleBalance();
+    });
+  }
+
+  if (btnMini) {
+    btnMini.addEventListener("click", () => {
+      if (!isLoggedIn) {
+        window.CGPT_CHAT?.appendMessage(
+          "bot",
+          "Please log in to view your mini statement."
+        );
+        return;
+      }
+      window.CGPT_CHAT?.appendMessage("user", "Mini statement");
+      markActivity();
+      handleMiniStatement();
+    });
+  }
+
+  if (btnFull) {
+    btnFull.addEventListener("click", () => {
+      if (!isLoggedIn) {
+        window.CGPT_CHAT?.appendMessage(
+          "bot",
+          "Please log in to view your account statement."
+        );
+        return;
+      }
+      window.CGPT_CHAT?.appendMessage("user", "Full account statement");
+      markActivity();
+      handleFullStatement();
+    });
+  }
+
+  if (btnFaq) {
+    btnFaq.addEventListener("click", () => {
+      if (!isLoggedIn) {
+        window.CGPT_CHAT?.appendMessage("bot", "Please log in to view FAQs.");
+        return;
+      }
+      window.CGPT_CHAT?.appendMessage("user", "FAQ");
+      markActivity();
+      handleFAQ();
+    });
+  }
+
+  if (btnLLM) {
+    btnLLM.addEventListener("click", () => {
+      if (!isLoggedIn) {
+        window.CGPT_CHAT?.appendMessage(
+          "bot",
+          "Please log in, then you can chat with the support bot."
+        );
+        return;
+      }
+      window.CGPT_CHAT?.appendMessage("user", "Chat with support bot");
+      markActivity();
+      enterLLMMode();
+    });
+  }
+
+  // -------------------------------
+  // FILE UPLOAD (DEMO ONLY)
+  // -------------------------------
+  if (uploadBtn && fileInput) {
+    uploadBtn.addEventListener("click", () => {
+      if (!isLoggedIn) {
+        window.CGPT_CHAT?.appendMessage(
+          "bot",
+          "Please log in before uploading documents."
+        );
+        return;
+      }
+      fileInput.click();
+    });
+
+    fileInput.addEventListener("change", () => {
+      const files = Array.from(fileInput.files || []);
+      if (!files.length) return;
+
+      markActivity();
+
+      files.forEach((file) => {
+        const sizeKb = Math.max(1, Math.round(file.size / 1024));
+        const summary = `Uploaded file: ${file.name} (${
+          file.type || "unknown type"
+        }, ~${sizeKb} KB)`;
+
+        window.CGPT_CHAT?.appendMessage("user", summary);
+      });
+
+      window.CGPT_CHAT?.appendMessage(
+        "bot",
+        "Thanks for uploading your files. In this demo, they stay in the browser only.\n" +
+          "Later, you can connect this button to a secure backend endpoint to process statements or documents."
+      );
+
+      fileInput.value = "";
+    });
+  }
 
   // -------------------------------
   // INITIAL GREETING
