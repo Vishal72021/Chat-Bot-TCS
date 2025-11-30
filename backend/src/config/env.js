@@ -18,11 +18,17 @@ export const config = {
   },
 
   smtp: {
+    // kept in case you ever want to use it again
     host: process.env.SMTP_HOST,
     port: Number(process.env.SMTP_PORT || 587),
     user: process.env.SMTP_USER,
     pass: process.env.SMTP_PASS,
     from: process.env.SMTP_FROM || "C-GPT Bank <no-reply@example.com>",
     secure: process.env.SMTP_SECURE === "true",
+  },
+
+  sendgrid: {
+    apiKey: process.env.SENDGRID_API_KEY,
+    from: process.env.SMTP_FROM || "C-GPT Bank <no-reply@example.com>",
   },
 };

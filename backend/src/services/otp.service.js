@@ -1,7 +1,7 @@
 // backend/src/services/otp.service.js
-import nodemailer from "nodemailer";
 import { query } from "../config/db.js";
 import { config } from "../config/env.js";
+import sgMail from "@sendgrid/mail";
 
 // -----------------------------
 // UTIL: Generate 6-digit OTP
@@ -50,90 +50,73 @@ export async function verifyOtp(contact, contactType, otp) {
 }
 
 // -----------------------------
-// SMTP TRANSPORT (NODEMAILER)
+// SEND EMAIL OTP (SENDGRID API)
 // -----------------------------
-let transporter = null;
+let sendgridInitialized = false;
 
-function getTransporter() {
-  if (transporter) return transporter;
+function initSendGrid() {
+  if (sendgridInitialized) return;
 
-  const { host, port, user, pass, secure } = config.smtp;
-
-  // DEBUG LOG – remove later
-  console.log("SMTP config debug:", {
-    host,
-    port,
-    user,
-    hasPass: !!pass,
-    secure,
-  });
-
-  if (!host || !user || !pass) {
-    throw new Error("SMTP is not configured (host/user/pass missing)");
+  if (!config.sendgrid?.apiKey) {
+    throw new Error("SendGrid API key not configured in environment variables");
   }
 
-  transporter = nodemailer.createTransport({
-    host,
-    port,
-    secure,
-    auth: {
-      user,
-      pass,
-    },
-  });
-
-  return transporter;
+  sgMail.setApiKey(config.sendgrid.apiKey);
+  sendgridInitialized = true;
 }
 
-// -----------------------------
-// SEND EMAIL OTP USING SMTP
-// -----------------------------
 export async function sendEmailOtp(email, otp) {
-  const transport = getTransporter();
+  try {
+    initSendGrid();
 
-  const mailOptions = {
-    from: config.smtp.from,
-    to: email,
-    subject: "Your C-GPT Banking OTP",
-    text: `Your C-GPT banking OTP is ${otp}. It is valid for 5 minutes. Do not share it with anyone.`,
-    html: `
-      <div style="font-family: system-ui, sans-serif, Arial; font-size: 14px; color:#1f2933;">
-        <div style="margin-bottom: 12px;">
-          Hi,
-        </div>
+    const from = config.sendgrid.from;
 
-        <div>
-          Your C-GPT Banking one-time password (OTP) is:
-        </div>
+    const msg = {
+      to: email,
+      from,
+      subject: "Your C-GPT Banking OTP",
+      text: `Your C-GPT banking OTP is ${otp}. It is valid for 5 minutes. Do not share it with anyone.`,
+      html: `
+        <div style="font-family: system-ui, sans-serif, Arial; font-size: 14px; color:#1f2933;">
+          <div style="margin-bottom: 12px;">Hi,</div>
 
-        <div style="margin-top: 16px; padding: 16px 20px; border-radius: 8px; background-color: #fef2f2; border: 1px solid #fecaca;">
-          <div style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: #b91c1c; margin-bottom: 8px;">
-            Your OTP
+          <div>Your C-GPT Banking one-time password (OTP) is:</div>
+
+          <div style="margin-top: 16px; padding: 16px 20px; border-radius: 8px; background-color: #fef2f2; border: 1px solid #fecaca;">
+            <div style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: #b91c1c; margin-bottom: 8px;">
+              Your OTP
+            </div>
+            <div style="font-size: 22px; font-weight: 600; color: #b91c1c;">
+              ${otp}
+            </div>
           </div>
-          <div style="font-size: 22px; font-weight: 600; color: #b91c1c;">
-            ${otp}
+
+          <div style="margin-top: 16px; font-size: 13px; line-height: 1.5;">
+            This code is valid for <strong>5 minutes</strong>. For your security, do not share this code with anyone.
+          </div>
+
+          <div style="margin-top: 24px; font-size: 12px; color:#9ca3af;">
+            If you did not request this code, you can safely ignore this email.
           </div>
         </div>
+      `,
+    };
 
-        <div style="margin-top: 16px; font-size: 13px; line-height: 1.5;">
-          This code is valid for <strong>5 minutes</strong>. For your security, do not share this code with anyone.
-        </div>
-
-        <div style="margin-top: 24px; font-size: 12px; color:#9ca3af;">
-          If you did not request this code, you can safely ignore this email.
-        </div>
-      </div>
-    `,
-  };
-
-  const info = await transport.sendMail(mailOptions);
-  console.log(`✅ Email OTP sent to ${email} (messageId: ${info.messageId})`);
+    await sgMail.send(msg);
+    console.log(`✅ Email OTP sent via SendGrid API to ${email}`);
+  } catch (err) {
+    console.error(
+      "❌ SendGrid OTP send failed:",
+      err.response?.body || err.message
+    );
+    throw err;
+  }
 }
 
 // -----------------------------
 // SEND PHONE OTP (DEMO MODE)
 // -----------------------------
 export async function sendPhoneOtp(phone, otp) {
-  // In a real-world project, integrate Twilio or another SMS provider here.
-  console.log(`[PHONE OTP] ${phone} => ${otp}`);
+  // Real-world: integrate Twilio, AWS SNS, etc.
+  console.log(`[PHONE OTP - DEMO ONLY] ${phone} => ${otp}`);
 }
