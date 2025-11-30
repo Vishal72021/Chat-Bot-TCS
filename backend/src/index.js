@@ -7,26 +7,22 @@ import bankRoutes from "./routes/bank.routes.js";
 
 const app = express();
 
-// --- CORS: allow local dev + any future frontend ---
+// --- CORS: allow all origins for demo/portfolio ---
 app.use(
   cors({
-    origin: (origin, callback) => {
-      // Allow requests from:
-      // - your local dev (127.0.0.1 / localhost)
-      // - any browser origin (for portfolio demos)
-      if (!origin) return callback(null, true); // curl / Postman / same-origin
-      return callback(null, true); // <-- allow all origins for now
-    },
+    origin: "*", // allow any origin
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
   })
 );
 
 // Preflight
 app.options("*", cors());
 
-// JSON parsing
+// --- Body parsing ---
 app.use(express.json());
 
-// Health check
+// --- Health check ---
 app.get("/", (req, res) => {
   res.json({
     status: "ok",
@@ -34,11 +30,11 @@ app.get("/", (req, res) => {
   });
 });
 
-// Routes
+// --- Routes ---
 app.use("/auth", authRoutes);
 app.use("/bank", bankRoutes);
 
-// Start server
+// --- Start server ---
 app.listen(config.port, () => {
   console.log(`Server running on port ${config.port}`);
 });
