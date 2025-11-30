@@ -73,7 +73,10 @@ export async function sendEmailOtp(email, otp) {
 
     const msg = {
       to: email,
-      from,
+      from: {
+        email: fromEmail,
+        name: "CGPT Bank",
+      },
       subject: "Your C-GPT Banking OTP",
       text: `Your C-GPT banking OTP is ${otp}. It is valid for 5 minutes. Do not share it with anyone.`,
       html: `
