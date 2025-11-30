@@ -16,24 +16,41 @@ export async function sendOtp(req, res) {
   try {
     const { method, email, phone } = req.body;
 
+    let contact, type;
+
     if (method === "email") {
       if (!email) return res.status(400).json({ error: "Email is required" });
-      const otp = await createOtp(email, "email");
-      await sendEmailOtp(email, otp);
-      return res.json({ ok: true, via: "email" });
-    }
-
-    if (method === "phone") {
+      contact = email;
+      type = "email";
+    } else if (method === "phone") {
       if (!phone) return res.status(400).json({ error: "Phone is required" });
-      const otp = await createOtp(phone, "phone");
-      await sendPhoneOtp(phone, otp);
-      return res.json({ ok: true, via: "phone" });
+      contact = phone;
+      type = "phone";
+    } else {
+      return res.status(400).json({ error: "Invalid method" });
     }
 
-    return res.status(400).json({ error: "Invalid method" });
+    const otp = await createOtp(contact, type);
+
+    try {
+      if (type === "email") {
+        await sendEmailOtp(contact, otp);
+      } else {
+        await sendPhoneOtp(contact, otp);
+      }
+    } catch (deliverErr) {
+      console.error("OTP delivery failed:", deliverErr);
+      return res
+        .status(500)
+        .json({ error: "OTP generated but email delivery failed" });
+    }
+
+    return res.json({ ok: true, via: type });
   } catch (err) {
-    console.error(err);
-    return res.status(500).json({ error: "Failed to send OTP" + err.message });
+    console.error("sendOtp error:", err);
+    return res
+      .status(500)
+      .json({ error: "Failed to send OTP: " + err.message });
   }
 }
 

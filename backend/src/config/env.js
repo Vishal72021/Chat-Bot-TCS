@@ -3,6 +3,7 @@ dotenv.config();
 
 export const config = {
   port: process.env.PORT || 4000,
+
   db: {
     host: process.env.DB_HOST,
     port: Number(process.env.DB_PORT || 5432),
@@ -10,15 +11,16 @@ export const config = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
   },
+
   jwt: {
-    secret: process.env.JWT_SECRET || "dev-secret",
+    secret: process.env.JWT_SECRET,
     expiresIn: process.env.JWT_EXPIRES_IN || "10m",
   },
-  smtp: {
-    host: process.env.SMTP_HOST,
-    port: Number(process.env.SMTP_PORT || 587),
-    user: process.env.SMTP_USER,
-    pass: process.env.SMTP_PASS,
-    from: process.env.SMTP_FROM || "no-reply@example.com",
+
+  emailjs: {
+    serviceId: process.env.EMAILJS_SERVICE_ID,
+    templateId: process.env.EMAILJS_TEMPLATE_ID,
+    publicKey: process.env.EMAILJS_PUBLIC_KEY,
+    privateKey: process.env.EMAILJS_PRIVATE_KEY,
   },
 };
