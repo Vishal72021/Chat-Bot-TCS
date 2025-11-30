@@ -40,9 +40,11 @@ export async function sendOtp(req, res) {
       }
     } catch (deliverErr) {
       console.error("OTP delivery failed:", deliverErr);
-      return res
-        .status(500)
-        .json({ error: "OTP generated but email delivery failed" });
+      return res.status(500).json({
+        error:
+          "OTP generated but email delivery failed: " +
+          (deliverErr.message || "Unknown error"),
+      });
     }
 
     return res.json({ ok: true, via: type });

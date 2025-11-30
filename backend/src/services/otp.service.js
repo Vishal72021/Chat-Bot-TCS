@@ -1,6 +1,11 @@
+// backend/src/services/otp.service.js
+import nodemailer from "nodemailer";
 import { query } from "../config/db.js";
 import { config } from "../config/env.js";
 
+// -----------------------------
+// UTIL: Generate 6-digit OTP
+// -----------------------------
 function generateOtp() {
   return String(Math.floor(100000 + Math.random() * 900000));
 }
@@ -45,45 +50,81 @@ export async function verifyOtp(contact, contactType, otp) {
 }
 
 // -----------------------------
-// SEND EMAIL VIA EMAILJS
+// SMTP TRANSPORT (NODEMAILER)
 // -----------------------------
-export async function sendEmailOtp(email, otp) {
-  const { serviceId, templateId, publicKey, privateKey } = config.emailjs;
+let transporter = null;
 
-  if (!serviceId || !templateId || !publicKey || !privateKey) {
-    throw new Error("EmailJS is not configured in environment variables");
+function getTransporter() {
+  if (transporter) return transporter;
+
+  const { host, port, user, pass, secure } = config.smtp;
+
+  if (!host || !user || !pass) {
+    throw new Error("SMTP is not configured (host/user/pass missing)");
   }
 
-  const payload = {
-    service_id: serviceId,
-    template_id: templateId,
-    user_id: publicKey,
-    accessToken: privateKey,
-    template_params: {
-      to_email: email,
-      otp: otp,
+  transporter = nodemailer.createTransport({
+    host,
+    port,
+    secure, // true for port 465, false for 587
+    auth: {
+      user,
+      pass,
     },
-  };
-
-  const res = await fetch("https://api.emailjs.com/api/v1.0/email/send", {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(payload),
   });
 
-  if (!res.ok) {
-    const text = await res.text();
-    throw new Error("EmailJS failed: " + text);
-  }
-
-  console.log(`✅ Email OTP sent to ${email}`);
+  return transporter;
 }
 
 // -----------------------------
-// PHONE OTP (UNCHANGED - LOG MODE)
+// SEND EMAIL OTP USING SMTP
+// -----------------------------
+export async function sendEmailOtp(email, otp) {
+  const transport = getTransporter();
+
+  const mailOptions = {
+    from: config.smtp.from,
+    to: email,
+    subject: "Your C-GPT Banking OTP",
+    text: `Your C-GPT banking OTP is ${otp}. It is valid for 5 minutes. Do not share it with anyone.`,
+    html: `
+      <div style="font-family: system-ui, sans-serif, Arial; font-size: 14px; color:#1f2933;">
+        <div style="margin-bottom: 12px;">
+          Hi,
+        </div>
+
+        <div>
+          Your C-GPT Banking one-time password (OTP) is:
+        </div>
+
+        <div style="margin-top: 16px; padding: 16px 20px; border-radius: 8px; background-color: #fef2f2; border: 1px solid #fecaca;">
+          <div style="font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em; color: #b91c1c; margin-bottom: 8px;">
+            Your OTP
+          </div>
+          <div style="font-size: 22px; font-weight: 600; color: #b91c1c;">
+            ${otp}
+          </div>
+        </div>
+
+        <div style="margin-top: 16px; font-size: 13px; line-height: 1.5;">
+          This code is valid for <strong>5 minutes</strong>. For your security, do not share this code with anyone.
+        </div>
+
+        <div style="margin-top: 24px; font-size: 12px; color:#9ca3af;">
+          If you did not request this code, you can safely ignore this email.
+        </div>
+      </div>
+    `,
+  };
+
+  const info = await transport.sendMail(mailOptions);
+  console.log(`✅ Email OTP sent to ${email} (messageId: ${info.messageId})`);
+}
+
+// -----------------------------
+// SEND PHONE OTP (DEMO MODE)
 // -----------------------------
 export async function sendPhoneOtp(phone, otp) {
+  // In a real-world project, integrate Twilio or another SMS provider here.
   console.log(`[PHONE OTP] ${phone} => ${otp}`);
 }
