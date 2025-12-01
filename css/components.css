@@ -449,3 +449,46 @@ html[data-cgpt-theme="black"] .cgpt-menu-btn--upload {
     border-radius: 16px;
   }
 }
+/* =========================================
+   CHAT PANEL HEIGHT & SCROLL (CORNER WIDGET)
+   ========================================= */
+
+/* Widget always floating in bottom-right */
+.cgpt-widget {
+  position: fixed;
+  right: 1rem;
+  bottom: 1rem;
+  z-index: 9999;
+}
+
+/* Panel: vertical flex, never taller than screen */
+.cgpt-panel {
+  display: flex;
+  flex-direction: column;
+  width: min(380px, 100vw - 2rem);      /* narrow on phones too */
+  max-height: calc(100vh - 3rem);       /* cap by viewport */
+  height: auto !important;              /* kill any 640px fixed height */
+  overflow: hidden;                     /* only body scrolls */
+}
+
+/* In case base.css has a .cgpt-panel.open height, override it */
+.cgpt-panel.open {
+  height: auto !important;
+  max-height: calc(100vh - 3rem);
+}
+
+/* Header, menu, composer stay visible; don't shrink away */
+.cgpt-header,
+.cgpt-menu-bar,
+.cgpt-composer {
+  flex-shrink: 0;
+}
+
+/* Only the message area scrolls */
+.cgpt-body,
+#cgptBody {
+  flex: 1;
+  min-height: 0;               /* critical for flexbox scrolling */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
