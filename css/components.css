@@ -269,23 +269,58 @@ html[data-cgpt-theme="black"] .cgpt-menu-btn--upload {
   overflow-y: auto;
 }
 
-/* Extra safety for very short laptops (≤700px height) */
+/* =========================================
+   SMALL SCREEN / LOW HEIGHT FIX (≤ 700px)
+   ========================================= */
+
+/* Base: make panel a vertical flex container */
+.cgpt-panel {
+  display: flex;
+  flex-direction: column;
+  /* cap height based on viewport instead of fixed px */
+  max-height: calc(100vh - 2rem); /* leave a little space from edges */
+  height: auto;
+  overflow: hidden; /* scrolling handled by inner body */
+}
+
+/* Header, menu, composer never scroll */
+.cgpt-header,
+.cgpt-menu-bar,
+.cgpt-composer {
+  flex-shrink: 0;
+}
+
+/* Chat body is the ONLY scrollable area */
+#cgptBody {
+  flex: 1;
+  min-height: 0;            /* CRITICAL for flexbox scrolling */
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+/* Extra tuning for very short screens (like 640px) */
 @media (max-height: 700px) {
   .cgpt-panel {
-    max-height: 96vh;
-    height: 96vh;
-    border-radius: 12px 12px 0 0; /* avoid top cutoff look */
-  }
-
-  #cgptBody {
-    padding: 0.5rem;
+    max-height: calc(100vh - 1rem);
+    height: auto;
+    border-radius: 14px 14px 0 0; /* optional, looks nicer when tall */
   }
 
   .cgpt-header {
     padding: 0.5rem 0.75rem;
   }
 
-  .cgpt-composer {
-    padding: 0.4rem;
+  #cgptBody {
+    padding: 0.5rem;
   }
+
+  .cgpt-composer {
+    padding: 0.4rem 0.5rem;
+  }
+}
+
+/* Make sure the login dialog is also usable on small heights */
+.cgpt-login-dialog {
+  max-height: calc(100vh - 2rem);
+  overflow-y: auto;
 }
