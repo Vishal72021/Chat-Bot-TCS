@@ -235,3 +235,57 @@ html[data-cgpt-theme="black"] .cgpt-menu-btn--upload {
   background: var(--cgpt-accent-strong);
   color: #ffffff;
 }
+/* ===============================
+   SMALL-LAPTOP / LOW-HEIGHT FIX
+   =============================== */
+
+/* Make the chat panel adapt to short screens */
+.cgpt-panel {
+  max-height: 90vh;
+  height: 90vh;              /* hard cap */
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header should NEVER scroll */
+.cgpt-header {
+  flex-shrink: 0;
+}
+
+/* Menu bar should NEVER scroll vertically */
+.cgpt-menu-bar {
+  flex-shrink: 0;
+}
+
+/* Composer (input + send) should NEVER scroll */
+.cgpt-composer {
+  flex-shrink: 0;
+}
+
+/* ONLY the chat body should scroll */
+#cgptBody {
+  flex: 1;
+  min-height: 0;             /* CRITICAL for flexbox scrolling */
+  overflow-y: auto;
+}
+
+/* Extra safety for very short laptops (≤700px height) */
+@media (max-height: 700px) {
+  .cgpt-panel {
+    max-height: 96vh;
+    height: 96vh;
+    border-radius: 12px 12px 0 0; /* avoid top cutoff look */
+  }
+
+  #cgptBody {
+    padding: 0.5rem;
+  }
+
+  .cgpt-header {
+    padding: 0.5rem 0.75rem;
+  }
+
+  .cgpt-composer {
+    padding: 0.4rem;
+  }
+}
