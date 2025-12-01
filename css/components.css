@@ -184,3 +184,54 @@ html[data-cgpt-theme="black"] .cgpt-menu-btn--upload {
 .cgpt-file-input {
   display: none;
 }
+
+/* ===============================
+   CHAT MESSAGE LAYOUT
+   =============================== */
+
+/* Make the chat body stack messages vertically with space */
+#cgptBody {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  overflow-y: auto;
+}
+
+/* Each message row is a flex container */
+.cgpt-msg {
+  display: flex;
+}
+
+/* Bot messages on the LEFT */
+.cgpt-msg--bot {
+  justify-content: flex-start;
+}
+
+/* User messages on the RIGHT */
+.cgpt-msg--user {
+  justify-content: flex-end;
+}
+
+/* Bubble styling (shared for both) */
+.cgpt-msg-bubble {
+  max-width: 80%;
+  padding: 0.6rem 0.8rem;
+  border-radius: 0.75rem;
+  font-size: 0.85rem;
+  line-height: 1.4;
+  word-wrap: break-word;
+  white-space: pre-wrap;
+}
+
+/* Bot bubble look */
+.cgpt-msg--bot .cgpt-msg-bubble {
+  background: #f3f4f6; /* light gray */
+  color: #111827;
+}
+
+/* User bubble look */
+.cgpt-msg--user .cgpt-msg-bubble {
+  background: var(--cgpt-accent-strong);
+  color: #ffffff;
+}

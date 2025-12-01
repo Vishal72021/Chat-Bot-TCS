@@ -1,4 +1,47 @@
 // js/widget.js
+
+// -------------------------------------
+// CHAT RENDERING ENGINE (window.CGPT_CHAT)
+// -------------------------------------
+window.CGPT_CHAT = (function () {
+  const bodyEl = document.querySelector("#cgptBody");
+  if (!bodyEl) {
+    console.warn("C-GPT: #cgptBody not found – chat messages will not render.");
+  }
+
+  function createMessageElement(role, text) {
+    const wrapper = document.createElement("div");
+    wrapper.className =
+      "cgpt-msg " + (role === "user" ? "cgpt-msg--user" : "cgpt-msg--bot");
+
+    const bubble = document.createElement("div");
+    bubble.className = "cgpt-msg-bubble";
+    bubble.textContent = text;
+
+    wrapper.appendChild(bubble);
+    return wrapper;
+  }
+
+  function appendMessage(role, text) {
+    if (!bodyEl) return;
+    const el = createMessageElement(role, text);
+    bodyEl.appendChild(el);
+    bodyEl.scrollTop = bodyEl.scrollHeight;
+  }
+
+  function botEcho(text) {
+    appendMessage("bot", text);
+  }
+
+  return {
+    appendMessage,
+    botEcho,
+  };
+})();
+
+// -------------------------------------
+// WIDGET LOGIC
+// -------------------------------------
 (function () {
   // -------------------------------
   // CONFIG
@@ -47,6 +90,12 @@
   const btnLLM = document.querySelector("#cgptBtnLLM");
   const uploadBtn = document.querySelector("#cgptUploadBtn");
   const fileInput = document.querySelector("#cgptFileInput");
+
+  // THEME UI
+  const themeBtn = document.querySelector("#cgptThemeBtn");
+  const themePop = document.querySelector("#cgptThemePop");
+  const themeOptions = document.querySelectorAll(".cgpt-theme-opt");
+  const rootHtml = document.documentElement;
 
   // -------------------------------
   // SESSION / AUTH STATE
@@ -139,6 +188,51 @@
   }
 
   updateAuthUI();
+
+  // -------------------------------
+  // THEME SWITCHER
+  // -------------------------------
+  function closeThemePop() {
+    if (!themePop) return;
+    themePop.setAttribute("aria-hidden", "true");
+    themePop.style.display = "none";
+  }
+
+  function openThemePop() {
+    if (!themePop) return;
+    themePop.style.display = "block";
+    themePop.setAttribute("aria-hidden", "false");
+  }
+
+  if (themeBtn && themePop) {
+    themeBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const isOpen = themePop.getAttribute("aria-hidden") === "false";
+      if (isOpen) closeThemePop();
+      else openThemePop();
+    });
+
+    document.addEventListener("click", (e) => {
+      if (!themePop) return;
+      if (
+        !themePop.contains(e.target) &&
+        e.target !== themeBtn &&
+        themePop.getAttribute("aria-hidden") === "false"
+      ) {
+        closeThemePop();
+      }
+    });
+  }
+
+  if (themeOptions && rootHtml) {
+    themeOptions.forEach((opt) => {
+      opt.addEventListener("click", () => {
+        const theme = opt.getAttribute("data-theme") || "red";
+        rootHtml.setAttribute("data-cgpt-theme", theme);
+        closeThemePop();
+      });
+    });
+  }
 
   // -------------------------------
   // PANEL OPEN/CLOSE
